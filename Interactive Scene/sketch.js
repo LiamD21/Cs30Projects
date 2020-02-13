@@ -11,21 +11,25 @@ let verticalV = 2;
 let horizontalV = 5;
 let carX = 300;
 let carY;
-let carWidth = 100;
-let carHeight = 60;
+let carWidth = 80;
+let carHeight = 45;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  carY = height - 75;
+  carY = height - 54;
 }
 
 function draw() {
   background(220);
 
-  fill("red");
+  fill(175, 0, 100);
   noStroke();
   rect(carX, carY, carWidth, carHeight);
-  rect(carX - 40,carY + 20, 40, 40);
+  rect(carX - 25,carY + 18, 25, 27);
+  rect(carX + carWidth, carY + 18, 25, 27);
+  fill("black");
+  ellipse(carX, carY + carHeight - 4, 25, 25);
+  ellipse(carX + carWidth, carY + carHeight - 4, 25, 25);
 
   stroke("black");
   fill(245, 135, 66);
@@ -53,6 +57,23 @@ function draw() {
 
   ballY += verticalV;
   ballX += horizontalV;
+
+  if (carX >= 25 && carX <= width - carWidth - 25){
+    if (keyIsDown(68)){
+      carX += 8;
+    }
+    if (keyIsDown(65)){
+      carX -= 8;
+    }
+  }
+  if (carX < 25 || carX > width - carWidth - 25){
+    if (carX < 25){
+      carX = 25;
+    }
+    else{
+      carX = width - carWidth - 25;
+    }
+  }
 }
 
 function keyPressed(){
