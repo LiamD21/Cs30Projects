@@ -5,6 +5,7 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
+let ballArray = [];
 let ballX = 800;
 let ballY = 300;
 let verticalV = 2;
@@ -13,6 +14,8 @@ let carX = 300;
 let carY;
 let carWidth = 80;
 let carHeight = 45;
+let carV = 5;
+let seconds;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -22,6 +25,13 @@ function setup() {
 function draw() {
   background(220);
 
+  drawCarAndBall();
+  ballBouncing();
+  carMoveOnKeyPress();
+  writeTime();
+}
+
+function drawCarAndBall(){
   fill(175, 0, 100);
   noStroke();
   rect(carX, carY, carWidth, carHeight);
@@ -35,12 +45,14 @@ function draw() {
   fill(245, 135, 66);
   ellipse(ballX, ballY, 75, 75);
   line(ballX, ballY + 75/2, ballX, ballY - 75/2);
+}
 
+function ballBouncing(){
   if (ballY < height - 75/2){
     verticalV += 0.35;
   }
   else if (ballY > height - 75/2){
-    verticalV *= -0.75;
+    verticalV *= -0.8;
     ballY = height - 75/2;
   }
 
@@ -57,13 +69,17 @@ function draw() {
 
   ballY += verticalV;
   ballX += horizontalV;
+}
 
+function carMoveOnKeyPress(){
   if (carX >= 25 && carX <= width - carWidth - 25){
     if (keyIsDown(68)){
-      carX += 8;
+      carX += carV;
+      carV ++;
     }
-    if (keyIsDown(65)){
-      carX -= 8;
+    else if (keyIsDown(65)){
+      carX -= carV;
+      carV ++;
     }
   }
   if (carX < 25 || carX > width - carWidth - 25){
@@ -76,9 +92,20 @@ function draw() {
   }
 }
 
+function writeTime(){
+  textSize(50);
+  fill(0);
+  seconds = millis()/1000;
+  seconds = seconds.toFixed(1);
+  text(seconds, 100, 100);
+}
+
 function keyPressed(){
   if (key === "m"){
     ballX = 800;
     ballY = 300;
+  }
+  if (key === "a" || key === "d"){
+    carV = 5;
   }
 }
