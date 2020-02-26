@@ -5,10 +5,6 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let ballX = 800;
-let ballY = 300;
-let verticalV = 2;
-let horizontalV = 5;
 let carX = 300;
 let carY;
 let carWidth = 80;
@@ -21,27 +17,42 @@ function setup() {
   carY = height - 54;
   let ballArray = [];
   for (i = 0; i < 11; i++){
-    let ball {
-      ballX
-      ballY
-      verticalV
-      horizontalV
-    }
+
+    let y = random(75 ,width - 75);
+    let vertV = random(1.5, 2.5);
+    let horV = random(2, 7);
+    let x = height - 100;
+
+    let ball = {
+      ballX: x,
+      ballY: y,
+      verticalV: vertV,
+      horizontalV: horV
+    };
     ballArray.push(ball);
   }
-  console.log(ballArray);
 }
 
 function draw() {
   background(220);
 
-  drawCarAndBall();
+  drawCar();
+  drawBall();
   ballBouncing();
   carMoveOnKeyPress();
   writeTime();
 }
 
-function drawCarAndBall(){
+function drawBall(){
+  for (i = 0; i <= ballArray.length; i++){
+    stroke("black");
+    fill(245, 135, 66);
+    ellipse(ballArray[i].ballX, ballY, 75, 75);
+    line(ballX, ballY + 75/2, ballX, ballY - 75/2);
+  }
+}
+
+function drawCar(){
   fill(175, 0, 100);
   noStroke();
   rect(carX, carY, carWidth, carHeight);
@@ -50,11 +61,6 @@ function drawCarAndBall(){
   fill("black");
   ellipse(carX, carY + carHeight - 4, 25, 25);
   ellipse(carX + carWidth, carY + carHeight - 4, 25, 25);
-
-  stroke("black");
-  fill(245, 135, 66);
-  ellipse(ballX, ballY, 75, 75);
-  line(ballX, ballY + 75/2, ballX, ballY - 75/2);
 }
 
 function ballBouncing(){
@@ -111,10 +117,6 @@ function writeTime(){
 }
 
 function keyPressed(){
-  if (key === "m"){
-    ballX = 800;
-    ballY = 300;
-  }
   if (key === "a" || key === "d"){
     carV = 5;
   }
