@@ -5,7 +5,6 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let ballArray = [];
 let ballX = 800;
 let ballY = 300;
 let verticalV = 2;
@@ -20,6 +19,17 @@ let seconds;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   carY = height - 54;
+  let ballArray = [];
+  for (i = 0; i < 11; i++){
+    let ball {
+      ballX
+      ballY
+      verticalV
+      horizontalV
+    }
+    ballArray.push(ball);
+  }
+  console.log(ballArray);
 }
 
 function draw() {
