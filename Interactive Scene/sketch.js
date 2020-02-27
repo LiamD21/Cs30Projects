@@ -7,21 +7,24 @@
 
 let carX = 300;
 let carY;
-let carWidth = 80;
-let carHeight = 45;
+let carWidth = 60;
+let carHeight = 40;
 let carV = 5;
 let seconds;
+let ballArray = [];
+let i;
+let lastBallSpawned = 0;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  carY = height - 54;
-  let ballArray = [];
-  for (i = 0; i < 11; i++){
+  carY = height - 45;
 
-    let y = random(75 ,width - 75);
+  for (i = 0; i < 10; i++){
+
+    let y = 100;
     let vertV = random(1.5, 2.5);
     let horV = random(2, 7);
-    let x = height - 100;
+    let x = random(75, width - 75);
 
     let ball = {
       ballX: x,
@@ -38,17 +41,18 @@ function draw() {
 
   drawCar();
   drawBall();
-  ballBouncing();
   carMoveOnKeyPress();
   writeTime();
+  ballBouncing();
+  respawnBalls();
 }
 
 function drawBall(){
-  for (i = 0; i <= ballArray.length; i++){
+  for (i = 0; i < ballArray.length; i++){
     stroke("black");
     fill(245, 135, 66);
-    ellipse(ballArray[i].ballX, ballY, 75, 75);
-    line(ballX, ballY + 75/2, ballX, ballY - 75/2);
+    ellipse(ballArray[i].ballX, ballArray[i].ballY, 75, 75);
+    line(ballArray[i].ballX, ballArray[i].ballY + 75/2, ballArray[i].ballX, ballArray[i].ballY - 75/2);
   }
 }
 
@@ -56,35 +60,60 @@ function drawCar(){
   fill(175, 0, 100);
   noStroke();
   rect(carX, carY, carWidth, carHeight);
-  rect(carX - 25,carY + 18, 25, 27);
-  rect(carX + carWidth, carY + 18, 25, 27);
+  rect(carX - 20,carY + 17, 20, 22);
+  rect(carX + carWidth, carY + 17, 20, 22);
   fill("black");
-  ellipse(carX, carY + carHeight - 4, 25, 25);
-  ellipse(carX + carWidth, carY + carHeight - 4, 25, 25);
+  ellipse(carX, carY + carHeight - 3, 22, 22);
+  ellipse(carX + carWidth, carY + carHeight - 3, 22, 22);
 }
 
 function ballBouncing(){
-  if (ballY < height - 75/2){
-    verticalV += 0.35;
-  }
-  else if (ballY > height - 75/2){
-    verticalV *= -0.8;
-    ballY = height - 75/2;
-  }
+  for (i = 0; i < ballArray.length; i++){
 
-  if (ballX > width - 75/2|| ballX < 75/2){
-    horizontalV *= -1;
-  }
+    if (ballArray[i].ballY < height - 75/2){
+      ballArray[i].verticalV += 0.35;
+    }
+    else if (ballArray[i].ballY > height - 75/2){
+      ballArray[i].verticalV *= -0.9;
+      ballArray[i].ballY = height - 75/2;
+    }
 
-  if (horizontalV > 0){
-    horizontalV -= 0.01;
-  }
-  else if (horizontalV < 0){
-    horizontalV += 0.01;
-  }
+    if (ballArray[i].ballX > width - 75/2|| ballArray[i].ballX < 75/2){
+      ballArray[i].horizontalV *= -1;
+    }
 
-  ballY += verticalV;
-  ballX += horizontalV;
+    if (ballArray[i].horizontalV > 0){
+      ballArray[i].horizontalV -= 0.01;
+    }
+    else if (ballArray[i].horizontalV < 0){
+      ballArray[i].horizontalV += 0.01;
+    }
+
+    ballArray[i].ballY += ballArray[i].verticalV;
+    ballArray[i].ballX += ballArray[i].horizontalV;
+  }
+}
+
+function respawnBalls(){
+  lastBallSpawned = millis() - lastBallSpawned;
+
+  if (millis() - lastBallSpawned > 3000){
+    ballArray.pop(0);
+    
+    let y = 100;
+    let vertV = random(1.5, 2.5);
+    let horV = random(2, 7);
+    let x = random(75, width - 75);
+
+    let ball = {
+      ballX: x,
+      ballY: y,
+      verticalV: vertV,
+      horizontalV: horV
+    };
+    ballArray.push(ball);
+    lastBallSpawned = millis();
+  }
 }
 
 function carMoveOnKeyPress(){
