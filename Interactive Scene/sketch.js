@@ -14,16 +14,19 @@ let seconds;
 let ballArray = [];
 let i;
 let lastBallSpawned = 0;
+let ballToRespawn;
+let lastNewBall = 0;
+let respawnTime = 1000;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   carY = height - 45;
 
-  for (i = 0; i < 10; i++){
+  for (i = 0; i < 5; i++){
 
     let y = 100;
-    let vertV = random(1.5, 2.5);
-    let horV = random(2, 7);
+    let vertV = random(1, 3);
+    let horV = random(-7, 7);
     let x = random(75, width - 75);
 
     let ball = {
@@ -45,6 +48,8 @@ function draw() {
   writeTime();
   ballBouncing();
   respawnBalls();
+  detectHit();
+  addBalls();
 }
 
 function drawBall(){
@@ -94,15 +99,21 @@ function ballBouncing(){
   }
 }
 
-function respawnBalls(){
-  lastBallSpawned = millis() - lastBallSpawned;
+function detectHit(){
+  for (i = 0; i < ballArray.length; i++){
+    if (ballArray[i].ballX - 75/2 < carX + carWidth + 20 && ballArray[i].ballX + 75/2 > carX + 20){
+      if (ballArray[i].ballY + 75/2 > carY){
+        text("LOSE", 500, 500);
+      }
+    }
+  }
+}
 
-  if (millis() - lastBallSpawned > 3000){
-    ballArray.pop(0);
-    
+function addBalls(){
+  if (millis() - lastNewBall > 5000){
     let y = 100;
-    let vertV = random(1.5, 2.5);
-    let horV = random(2, 7);
+    let vertV = random(1, 3);
+    let horV = random(-7, 7);
     let x = random(75, width - 75);
 
     let ball = {
@@ -112,6 +123,21 @@ function respawnBalls(){
       horizontalV: horV
     };
     ballArray.push(ball);
+
+    lastNewBall = millis();
+  }
+}
+
+function respawnBalls(){
+  if (millis() - lastBallSpawned > respawnTime){
+    ballToRespawn = random(0, ballArray.length - 1);
+    ballToRespawn = Math.round(ballToRespawn);
+
+    ballArray[ballToRespawn].ballY = 100;
+    ballArray[ballToRespawn].ballX = random(75, width - 75);
+    ballArray[ballToRespawn].verticalV = random(1, 3);
+    ballArray[ballToRespawn].horizontalV = random(-7, 7);
+
     lastBallSpawned = millis();
   }
 }
@@ -147,6 +173,6 @@ function writeTime(){
 
 function keyPressed(){
   if (key === "a" || key === "d"){
-    carV = 5;
+    carV = 1;
   }
 }
