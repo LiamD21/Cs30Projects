@@ -9,7 +9,7 @@ let carX = 300;
 let carY;
 let carWidth = 60;
 let carHeight = 40;
-let carV = 5;
+let carV;
 let seconds;
 let ballArray = [];
 let i;
@@ -21,24 +21,38 @@ let startScreen = true;
 let playingGame = false;
 let gameOverScreen = false;
 let finalScore;
+let numberOfStartingBalls = 4;
+let gameStartTime;
+let colorList  = ["blue", "red", "green", "yellow", "pink", "purple", "orange", "magenta", "cyan", "black", "brown", "grey"];
+let thisBallColor;
+let ballPit;
+
+function preload() {
+  ballPit = loadImage("assets/ballpit.jpeg");
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  noStroke();
 
   carY = height - 45;
 
-  for (i = 0; i < 5; i++){
+  for (i = 0; i < numberOfStartingBalls; i++){
+
+    thisBallColor = random(colorList);
 
     let y = 100;
     let vertV = random(1, 3);
     let horV = random(-7, 7);
     let x = random(75, width - 75);
+    let color = thisBallColor;
 
     let ball = {
       ballX: x,
       ballY: y,
       verticalV: vertV,
-      horizontalV: horV
+      horizontalV: horV,
+      color: color
     };
     ballArray.push(ball);
   }
@@ -46,6 +60,7 @@ function setup() {
 
 function draw() {
   background(220);
+
   if (startScreen){
     drawStartScreen();
   }
@@ -69,7 +84,7 @@ function draw() {
 function drawStartScreen(){
   textSize(200);
   fill(50, 50, 200);
-  text("Dropper", width/2 - 400, height/2)
+  text("Dropper", width/2 - 400, height/2);
   fill("black");
   textSize(50);
   text("Press Space To Start", width/2  - 300, height/2 + 200);
@@ -87,10 +102,30 @@ function drawGameOver(){
 
 function drawBall(){
   for (i = 0; i < ballArray.length; i++){
-    stroke("black");
-    fill(245, 135, 66);
+    fill(ballArray[i].color);
     ellipse(ballArray[i].ballX, ballArray[i].ballY, 75, 75);
-    line(ballArray[i].ballX, ballArray[i].ballY + 75/2, ballArray[i].ballX, ballArray[i].ballY - 75/2);
+  }
+}
+
+function createBallArray(){
+  for (i = 0; i < numberOfStartingBalls; i++){
+
+    thisBallColor = random(colorList);
+
+    let y = 100;
+    let vertV = random(1, 3);
+    let horV = random(-7, 7);
+    let x = random(75, width - 75);
+    let color = thisBallColor;
+
+    let ball = {
+      ballX: x,
+      ballY: y,
+      verticalV: vertV,
+      horizontalV: horV,
+      color: color
+    };
+    ballArray.push(ball);
   }
 }
 
@@ -147,16 +182,20 @@ function detectHit(){
 function addBalls(){
   if (playingGame){
     if (millis() - lastNewBall > 3000){
+      thisBallColor = random(colorList);
+
       let y = 100;
       let vertV = random(1, 3);
       let horV = random(-7, 7);
       let x = random(75, width - 75);
+      let color = thisBallColor;
 
       let ball = {
         ballX: x,
         ballY: y,
         verticalV: vertV,
-        horizontalV: horV
+        horizontalV: horV,
+        color: color
       };
       ballArray.push(ball);
 
@@ -185,11 +224,11 @@ function carMoveOnKeyPress(){
   if (carX >= 25 && carX <= width - carWidth - 25){
     if (keyIsDown(68)){
       carX += carV;
-      carV ++;
+      carV += 0.5;
     }
     else if (keyIsDown(65)){
       carX -= carV;
-      carV ++;
+      carV += 0.5;
     }
   }
   if (carX < 25 || carX > width - carWidth - 25){
@@ -212,7 +251,7 @@ function writeTime(){
 
 function keyPressed(){
   if (key === "a" || key === "d"){
-    carV = 1;
+    carV = 10;
   }
   if (startScreen){
     if (key === " "){
@@ -221,6 +260,14 @@ function keyPressed(){
       gameStartTime = millis();
       lastNewBall = gameStartTime;
       lastBallSpawned = gameStartTime;
+    }
+  }
+  if (gameOverScreen) {
+    if (key === " ") {
+      gameOverScreen = false;
+      startScreen = true;
+      ballArray = [];
+      createBallArray();
     }
   }
 }
