@@ -26,6 +26,10 @@ let gameStartTime;
 let colorList  = ["blue", "red", "green", "yellow", "pink", "purple", "orange", "magenta", "cyan", "black", "brown", "grey"];
 let thisBallColor;
 let ballPit;
+let highScores;
+let r = 200;
+let g = 100;
+let b = 200;
 
 function preload() {
   ballPit = loadImage("assets/ballpit.jpeg");
@@ -86,8 +90,27 @@ function drawStartScreen(){
   fill(50, 50, 200);
   text("Dropper", width/2 - 400, height/2);
   fill("black");
-  textSize(50);
-  text("Press Space To Start", width/2  - 300, height/2 + 200);
+  textSize(100);
+  stroke(20);
+  fill("yellow");
+  rect(width/2  - 200, height/2 + 100, 300, 150);
+  fill("black");
+  text("Start", width/2  - 150, height/2 + 200);
+  if(mouseX > width/2 - 200 && mouseX < width/2 + 100 && mouseY > height/2 + 100 && mouseY < height/2 + 250){
+    fill("orange");
+    rect(width/2  - 200, height/2 + 100, 300, 150);
+    fill("black");
+    text("Start", width/2  - 150, height/2 + 200);
+  }
+  fill(r ,g ,b);
+  rect(width/6, height/6, 100, 100);
+
+  fill("red");
+  rect(width/6 - 100, height/6, 50, 50);
+  fill("blue");
+  rect(width/6 - 100, height/6 + 75, 50, 50);
+  fill("green");
+  rect(width/6 - 100, height/6 + 150, 50, 50);
 }
 
 function drawGameOver(){
@@ -130,7 +153,7 @@ function createBallArray(){
 }
 
 function drawCar(){
-  fill(175, 0, 100);
+  fill(r, g, b);
   noStroke();
   rect(carX, carY, carWidth, carHeight);
   rect(carX - 20,carY + 17, 20, 22);
@@ -253,21 +276,49 @@ function keyPressed(){
   if (key === "a" || key === "d"){
     carV = 10;
   }
-  if (startScreen){
-    if (key === " "){
-      startScreen = false;
-      playingGame = true;
-      gameStartTime = millis();
-      lastNewBall = gameStartTime;
-      lastBallSpawned = gameStartTime;
-    }
-  }
   if (gameOverScreen) {
     if (key === " ") {
       gameOverScreen = false;
       startScreen = true;
       ballArray = [];
       createBallArray();
+    }
+  }
+}
+
+function mouseClicked(){
+  if(startScreen && mouseX > width/2 - 200 && mouseX < width/2 + 100 && mouseY > height/2 + 100 && mouseY < height/2 + 250){
+    startScreen = false;
+    playingGame = true;
+    gameStartTime = millis();
+    lastNewBall = gameStartTime;
+    lastBallSpawned = gameStartTime;
+  }
+}
+
+function mouseWheel(event){
+  if (startScreen && mouseX > width/6 - 100 && mouseX < width/6 - 50 && mouseY > height/6 && mouseY < height/6 + 50){
+    if(event.delta > 0 && r > 0){
+      r -= 20;
+    }
+    if(event.delta < 0 && r < 255){
+      r += 20;
+    }
+  }
+  if (startScreen && mouseX > width/6 - 100 && mouseX < width/6 - 50 && mouseY > height/6 + 75 && mouseY < height/6 + 125){
+    if(event.delta > 0 &&  b > 0){
+      b -= 20;
+    }
+    if(event.delta < 0 &&  b < 255){
+      b += 20;
+    }
+  }
+  if (startScreen && mouseX > width/6 - 100 && mouseX < width/6 - 50 && mouseY > height/6 + 150 && mouseY < height/6 + 200){
+    if(event.delta > 0 && g > 0){
+      g -= 20;
+    }
+    if(event.delta < 0 && g < 255){
+      g += 20;
     }
   }
 }
