@@ -25,15 +25,10 @@ let numberOfStartingBalls = 4;
 let gameStartTime;
 let colorList  = ["blue", "red", "green", "yellow", "pink", "purple", "orange", "magenta", "cyan", "black", "brown", "grey"];
 let thisBallColor;
-let ballPit;
-let highScores;
+let highScore = 0;
 let r = 200;
 let g = 100;
 let b = 200;
-
-function preload() {
-  ballPit = loadImage("assets/ballpit.jpeg");
-}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -86,21 +81,22 @@ function draw() {
 }
 
 function drawStartScreen(){
-  textSize(200);
+  textSize(150);
   fill(50, 50, 200);
-  text("Dropper", width/2 - 400, height/2);
+  text("Falling Balls", width/2 - 375, height/2);
   fill("black");
-  textSize(100);
+  textSize(75);
   stroke(20);
   fill("yellow");
-  rect(width/2  - 200, height/2 + 100, 300, 150);
+  rect(width/2  - 125, height/2 + 125, 215, 100);
   fill("black");
-  text("Start", width/2  - 150, height/2 + 200);
+  text("Start", width/2  - 100, height/2 + 200);
+
   if(mouseX > width/2 - 200 && mouseX < width/2 + 100 && mouseY > height/2 + 100 && mouseY < height/2 + 250){
     fill("orange");
-    rect(width/2  - 200, height/2 + 100, 300, 150);
+    rect(width/2  - 125, height/2 + 125, 215, 100);
     fill("black");
-    text("Start", width/2  - 150, height/2 + 200);
+    text("Start", width/2  - 100, height/2 + 200);
   }
   fill(r ,g ,b);
   rect(width/6, height/6, 100, 100);
@@ -111,12 +107,19 @@ function drawStartScreen(){
   rect(width/6 - 100, height/6 + 75, 50, 50);
   fill("green");
   rect(width/6 - 100, height/6 + 150, 50, 50);
+
+  textSize(20);
+  fill(0);
+  text("Scroll The Mouse Wheel in",width/11, height/2);
+  text("a Box to Select Color", width/11, height/2 + 25);
+  textSize(40);
+  text("Your highest score yet is " + highScore + "s", width - 700, 40);
 }
 
 function drawGameOver(){
-  textSize(200);
+  textSize(175);
   fill(200, 50, 50);
-  text("GAME OVER", width/2 - 600, height/2);
+  text("GAME OVER", width/2 - 525, height/2);
   fill("black");
   textSize(50);
   text("You Survived For " + str(finalScore) + " Seconds!", width/2 - 350, height/2 + 100);
@@ -197,6 +200,9 @@ function detectHit(){
         finalScore = seconds;
         playingGame = false;
         gameOverScreen = true;
+        if (finalScore > highScore){
+          highScore = finalScore;
+        }
       }
     }
   }
