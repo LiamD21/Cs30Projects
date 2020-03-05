@@ -34,7 +34,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   noStroke();
 
-  carY = height - 45;
+  carY = height - carHeight/2  -11;
 
   for (i = 0; i < numberOfStartingBalls; i++){
 
@@ -81,22 +81,24 @@ function draw() {
 }
 
 function drawStartScreen(){
+  textAlign(CENTER);
+  rectMode(CENTER);
   textSize(150);
   fill(50, 50, 200);
-  text("Falling Balls", width/2 - 375, height/2);
+  text("Falling Balls", width/2, height/2);
   fill("black");
   textSize(75);
   stroke(20);
   fill("yellow");
-  rect(width/2  - 125, height/2 + 125, 215, 100);
+  rect(width/2, height/2 + 175, 200, 100);
   fill("black");
-  text("Start", width/2  - 100, height/2 + 200);
+  text("Start", width/2, 3*height/4);
 
-  if(mouseX > width/2 - 200 && mouseX < width/2 + 100 && mouseY > height/2 + 100 && mouseY < height/2 + 250){
+  if(mouseX > width/2 - 100 && mouseX < width/2 + 100 && mouseY > height/2 + 125 && mouseY < height/2 + 225){
     fill("orange");
-    rect(width/2  - 125, height/2 + 125, 215, 100);
+    rect(width/2, height/2 + 175, 200, 100);
     fill("black");
-    text("Start", width/2  - 100, height/2 + 200);
+    text("Start", width/2, 3*height/4);
   }
   fill(r ,g ,b);
   rect(width/6, height/6, 100, 100);
@@ -110,20 +112,20 @@ function drawStartScreen(){
 
   textSize(20);
   fill(0);
-  text("Scroll The Mouse Wheel in",width/11, height/2);
-  text("a Box to Select Color", width/11, height/2 + 25);
+  text("Scroll The Mouse Wheel in",width/11, height/2 - 20);
+  text("a Box to Select Color", width/11, height/2);
   textSize(40);
-  text("Your highest score yet is " + highScore + "s", width - 700, 40);
+  text("Your highest score yet is " + highScore + "s", width/2, 40);
 }
 
 function drawGameOver(){
   textSize(175);
   fill(200, 50, 50);
-  text("GAME OVER", width/2 - 525, height/2);
+  text("GAME OVER", width/2, height/2);
   fill("black");
   textSize(50);
-  text("You Survived For " + str(finalScore) + " Seconds!", width/2 - 350, height/2 + 100);
-  text("Press Space To Play Again", width/2 - 300, height/2 + 200);
+  text("You Survived For " + str(finalScore) + " Seconds!", width/2, height/2 + 100);
+  text("Press Space To Play Again", width/2, height/2 + 200);
 }
 
 function drawBall(){
@@ -159,11 +161,11 @@ function drawCar(){
   fill(r, g, b);
   noStroke();
   rect(carX, carY, carWidth, carHeight);
-  rect(carX - 20,carY + 17, 20, 22);
-  rect(carX + carWidth, carY + 17, 20, 22);
+  rect(carX - carWidth/2 - 10,carY + 10, 20, 20);
+  rect(carX + carWidth/2 + 10, carY + 10, 20, 20);
   fill("black");
-  ellipse(carX, carY + carHeight - 3, 22, 22);
-  ellipse(carX + carWidth, carY + carHeight - 3, 22, 22);
+  ellipse(carX - carWidth/2, carY + carHeight/2, 22, 22);
+  ellipse(carX + carWidth/2, carY + carHeight/2, 22, 22);
 }
 
 function ballBouncing(){
@@ -293,7 +295,7 @@ function keyPressed(){
 }
 
 function mouseClicked(){
-  if(startScreen && mouseX > width/2 - 200 && mouseX < width/2 + 100 && mouseY > height/2 + 100 && mouseY < height/2 + 250){
+  if(startScreen && (mouseX > width/2 - 100 && mouseX < width/2 + 100 && mouseY > height/2 + 125 && mouseY < height/2 + 225)){
     startScreen = false;
     playingGame = true;
     gameStartTime = millis();
@@ -303,7 +305,7 @@ function mouseClicked(){
 }
 
 function mouseWheel(event){
-  if (startScreen && mouseX > width/6 - 100 && mouseX < width/6 - 50 && mouseY > height/6 && mouseY < height/6 + 50){
+  if (startScreen && mouseX > width/6 - 125 && mouseX < width/6 - 75 && mouseY > height/6 && mouseY < height/6 + 50){
     if(event.delta > 0 && r > 0){
       r -= 20;
     }
@@ -311,7 +313,7 @@ function mouseWheel(event){
       r += 20;
     }
   }
-  if (startScreen && mouseX > width/6 - 100 && mouseX < width/6 - 50 && mouseY > height/6 + 75 && mouseY < height/6 + 125){
+  if (startScreen && mouseX > width/6 - 125 && mouseX < width/6 - 75 && mouseY > height/6 + 75 && mouseY < height/6 + 125){
     if(event.delta > 0 &&  b > 0){
       b -= 20;
     }
@@ -319,7 +321,7 @@ function mouseWheel(event){
       b += 20;
     }
   }
-  if (startScreen && mouseX > width/6 - 100 && mouseX < width/6 - 50 && mouseY > height/6 + 150 && mouseY < height/6 + 200){
+  if (startScreen && mouseX > width/6 - 125 && mouseX < width/6 - 75 && mouseY > height/6 + 150 && mouseY < height/6 + 200){
     if(event.delta > 0 && g > 0){
       g -= 20;
     }
