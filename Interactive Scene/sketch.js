@@ -23,12 +23,14 @@ let gameOverScreen = false;
 let finalScore;
 let numberOfStartingBalls = 4;
 let gameStartTime;
-let colorList  = ["blue", "red", "green", "yellow", "pink", "purple", "orange", "magenta", "cyan", "black", "brown", "grey"];
 let thisBallColor;
 let highScore = 0;
-let r = 200;
-let g = 100;
-let b = 200;
+let r = 255;
+let g = 150;
+let b = 50;
+let ballR;
+let ballG;
+let ballB;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -38,13 +40,15 @@ function setup() {
 
   for (i = 0; i < numberOfStartingBalls; i++){
 
-    thisBallColor = random(colorList);
+    ballR = Math.round(random(0, 255));
+    ballG = Math.round(random(0, 255));
+    ballB = Math.round(random(0, 255));
 
     let y = 100;
     let vertV = random(1, 3);
     let horV = random(-7, 7);
     let x = random(75, width - 75);
-    let color = thisBallColor;
+    let color = [ballR, ballG, ballB];
 
     let ball = {
       ballX: x,
@@ -62,6 +66,8 @@ function draw() {
 
   if (startScreen){
     drawStartScreen();
+    drawStartButton();
+    drawColorPicker();
   }
 
   if (playingGame){
@@ -87,6 +93,11 @@ function drawStartScreen(){
   fill(50, 50, 200);
   text("Falling Balls", width/2, height/2);
   fill("black");
+  textSize(40);
+  text("Your highest score yet is " + highScore + "s", width/2, 40);
+}
+
+function drawStartButton(){
   textSize(75);
   stroke(20);
   fill("yellow");
@@ -100,6 +111,9 @@ function drawStartScreen(){
     fill("black");
     text("Start", width/2, 3*height/4);
   }
+}
+
+function drawColorPicker(){
   fill(r ,g ,b);
   rect(width/6, height/6, 100, 100);
 
@@ -114,11 +128,13 @@ function drawStartScreen(){
   fill(0);
   text("Scroll The Mouse Wheel in",width/11, height/2 - 20);
   text("a Box to Select Color", width/11, height/2);
-  textSize(40);
-  text("Your highest score yet is " + highScore + "s", width/2, 40);
 }
 
 function drawGameOver(){
+  if (finalScore >= highScore){
+    highScore = finalScore;
+  }
+
   textSize(175);
   fill(200, 50, 50);
   text("GAME OVER", width/2, height/2);
@@ -130,7 +146,7 @@ function drawGameOver(){
 
 function drawBall(){
   for (i = 0; i < ballArray.length; i++){
-    fill(ballArray[i].color);
+    fill(ballArray[i].color[0], ballArray[i].color[1], ballArray[i].color[2]);
     ellipse(ballArray[i].ballX, ballArray[i].ballY, 75, 75);
   }
 }
@@ -138,13 +154,15 @@ function drawBall(){
 function createBallArray(){
   for (i = 0; i < numberOfStartingBalls; i++){
 
-    thisBallColor = random(colorList);
+    ballR = random(0, 255);
+    ballG = random(0, 255);
+    ballB = random(0, 255);
 
     let y = 100;
     let vertV = random(1, 3);
     let horV = random(-7, 7);
     let x = random(75, width - 75);
-    let color = thisBallColor;
+    let color = [ballR, ballG, ballB];
 
     let ball = {
       ballX: x,
@@ -197,14 +215,12 @@ function ballBouncing(){
 
 function detectHit(){
   for (i = 0; i < ballArray.length; i++){
-    if (ballArray[i].ballX - 75/2 < carX + carWidth + 20 && ballArray[i].ballX + 75/2 > carX + 20){
-      if (ballArray[i].ballY + 75/2 > carY){
+    if (ballArray[i].ballX - 75/2 < carX + carWidth/2 + 20 && ballArray[i].ballX + 75/2 > carX - carWidth/2 - 20){
+      if (ballArray[i].ballY + 75/2 > carY - carHeight/2){
         finalScore = seconds;
         playingGame = false;
         gameOverScreen = true;
-        if (finalScore > highScore){
-          highScore = finalScore;
-        }
+        
       }
     }
   }
@@ -213,13 +229,15 @@ function detectHit(){
 function addBalls(){
   if (playingGame){
     if (millis() - lastNewBall > 3000){
-      thisBallColor = random(colorList);
+      ballR = random(0, 255);
+      ballG = random(0, 255);
+      ballB = random(0, 255);
 
       let y = 100;
       let vertV = random(1, 3);
       let horV = random(-7, 7);
       let x = random(75, width - 75);
-      let color = thisBallColor;
+      let color = [ballR, ballG, ballB];
 
       let ball = {
         ballX: x,
@@ -305,7 +323,7 @@ function mouseClicked(){
 }
 
 function mouseWheel(event){
-  if (startScreen && mouseX > width/6 - 125 && mouseX < width/6 - 75 && mouseY > height/6 && mouseY < height/6 + 50){
+  if (startScreen && mouseX > width/6 - 125 && mouseX < width/6 - 75 && mouseY > height/6 - 25 && mouseY < height/6 + 25){
     if(event.delta > 0 && r > 0){
       r -= 20;
     }
@@ -313,7 +331,7 @@ function mouseWheel(event){
       r += 20;
     }
   }
-  if (startScreen && mouseX > width/6 - 125 && mouseX < width/6 - 75 && mouseY > height/6 + 75 && mouseY < height/6 + 125){
+  if (startScreen && mouseX > width/6 - 125 && mouseX < width/6 - 75 && mouseY > height/6 + 50 && mouseY < height/6 + 100){
     if(event.delta > 0 &&  b > 0){
       b -= 20;
     }
@@ -321,7 +339,7 @@ function mouseWheel(event){
       b += 20;
     }
   }
-  if (startScreen && mouseX > width/6 - 125 && mouseX < width/6 - 75 && mouseY > height/6 + 150 && mouseY < height/6 + 200){
+  if (startScreen && mouseX > width/6 - 125 && mouseX < width/6 - 75 && mouseY > height/6 + 125 && mouseY < height/6 + 175){
     if(event.delta > 0 && g > 0){
       g -= 20;
     }
