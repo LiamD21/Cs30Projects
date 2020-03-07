@@ -1,9 +1,11 @@
 // Interactive Scene
 // Liam Dallaire
-// 2/12/2020
+// 03/07/2020
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// I used the mouse wheel to custom make colors by changing the r g b  values of each color for the car
+// I used state variables to make start and end screens and kept track of session high scores
+// I used collisions and made a button without the built in library
 
 let carX = 300;
 let carY;
