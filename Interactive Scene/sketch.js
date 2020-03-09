@@ -1,6 +1,6 @@
 // Interactive Scene
 // Liam Dallaire
-// 03/07/2020
+// 03/09/2020
 //
 // Extra for Experts:
 // I used the mouse wheel to custom make colors by changing the r g b  values of each color for the car
@@ -116,7 +116,7 @@ function drawColorPicker(){
   fill("green");
   rect(width/6 - 100, height/6 + 150, 50, 50);
 
-    // the instructions
+  // the instructions
   textSize(20);
   fill(0);
   text("Scroll The Mouse Wheel in",width/11, height/2 - 20);
