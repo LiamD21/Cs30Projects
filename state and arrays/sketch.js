@@ -22,22 +22,19 @@ function draw() {
 }
 
 function drawShip() {
+  triangle(shipX, shipY + 30, shipX - 15, shipY - 30, shipX + 15, shipY - 30);
+
+  push();
   translate(shipX, shipY);
   rotate(shipAngle);
-  beginShape(SHIP);
-  vertex(shipX, shipY - 50);
-  vertex(shipX - 25, shipY + 25);
-  vertex(shipX, shipY + 10);
-  vertex(shipX + 25, shipY + 25);
-  endShape(CLOSE);
-  translate(-shipX, -shipY);
+  pop();
 }
 
 function rotateShip() {
   if (keyIsPressed && key === "a"){
-    shipAngle += 10;
+    shipAngle += 3;
   }
   if (keyIsPressed && key === "a"){
-    shipAngle -= 10;
+    shipAngle -= 3;
   }
 }
