@@ -1,6 +1,6 @@
-// Project Title
+// State variables and arrays assignment
 // Liam Dallaire
-// Date
+// 0/0/0
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
@@ -17,24 +17,24 @@ function setup() {
 function draw() {
   background(220);
 
+  turnShip();
   drawShip();
-  rotateShip();
 }
 
 function drawShip() {
-  triangle(shipX, shipY + 30, shipX - 15, shipY - 30, shipX + 15, shipY - 30);
 
   push();
   translate(shipX, shipY);
   rotate(shipAngle);
+  triangle(shipX, shipY + 30, shipX - 15, shipY - 30, shipX + 15, shipY - 30);
   pop();
 }
 
-function rotateShip() {
+function turnShip() {
   if (keyIsPressed && key === "a"){
     shipAngle += 3;
   }
-  if (keyIsPressed && key === "a"){
+  if (keyIsPressed && key === "d"){
     shipAngle -= 3;
   }
 }
