@@ -16,11 +16,21 @@ let movingForward = false;
 let turningLeft = false;
 let turningRight = false;
 let enemyArray = [];
+let shipVectors;
+let enemyVectors;
+let rockVectors;
+let rockArray = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   noStroke();
-  window.setInterval(createEnemy, 1000);
+  window.setInterval(createEnemyRed, 2000);
+  window.setInterval(createEnemyGreen, 5000);
+
+  
+  shipVectors = [createVector(30, 0), createVector(-30, 20), createVector(-15, 0), createVector(-30, -20)];
+  enemyVectorsRed = [createVector(20, 0), createVector(-20, -10), createVector(-20, 10)];
+  enemyVectorsGreen = [createVector(35, 0), createVector(10, 10), createVector(10, 27), createVector(-20, 27), createVector(-20, 7.5), createVector(-5, 7.5), createVector(-5, -7.5), createVector(-20, -7.5), createVector(-20, -27), createVector(10, -27), createVector(10, -10)];
 }
 
 function draw() {
@@ -38,18 +48,46 @@ function drawShip() {
   translate(shipX, shipY);
   rotate(shipAngle);
   fill("blue");
-  triangle(30, 0, -30, 15, -30, -15);
+  beginShape();
+  for (let i = 0; i < shipVectors.length; i++){
+    vertex(shipVectors[i].x, shipVectors[i].y);
+  }
+  endShape(CLOSE);
   pop();
 }
 
 
-function createEnemy() {
+function createEnemyRed() {
+
   let enemy = {
     x: 0 ,
     y: random(0, height),
-    angle: 0
+    angle: 0,
+    v: random(2, 3.5),
+    type: "red"
   };
   enemyArray.push(enemy);
+}
+
+function createEnemyGreen(){
+  let enemy = {
+    x: width,
+    y: random(0, height),
+    angle: 0,
+    v: random(1, 2),
+    type: "green"
+  };
+  enemyArray.push(enemy);
+}
+
+function createRock(){
+  rockVectors = [createVector(random(-1, -40), random(-1, -40)), createVector(random(1, 40), random(-1, -40)), createVector(random(1, 40), random(1, 40)), createVector(random(-1, -40), random(1, 40))];
+
+  rock = {
+    vectors: rockVectors,
+    v = random(7, 10)
+  }
+  rockArray.push(rock);
 }
 
 function drawEnemy() {
@@ -57,8 +95,24 @@ function drawEnemy() {
     push();
     translate(enemyArray[i].x, enemyArray[i].y);
     rotate(enemyArray[i].angle);
-    fill("red");
-    triangle(20, 0, -20, 10, -20, -10);
+
+    if (enemyArray[i].type === "red"){
+      fill("red");
+      beginShape();
+      for (let i = 0; i < enemyVectorsRed.length; i++){
+        vertex(enemyVectorsRed[i].x, enemyVectorsRed[i].y);
+      }
+      endShape(CLOSE);
+   }
+
+   if (enemyArray[i].type === "green"){
+     fill("green");
+     beginShape();
+     for (let i = 0; i < enemyVectorsGreen.length; i++){
+       vertex(enemyVectorsGreen[i].x, enemyVectorsGreen[i].y);
+     }
+     endShape(CLOSE);
+   }
     pop();
   }
 }
@@ -67,8 +121,8 @@ function moveEnemy(){
   for (let i = 0; i < enemyArray.length; i++){
     enemyArray[i].angle = Math.atan2(shipY - enemyArray[i].y, shipX - enemyArray[i].x);
 
-    enemyArray[i].y += Math.sin(enemyArray[i].angle) * 3;;
-    enemyArray[i].x += Math.cos(enemyArray[i].angle) * 3;;
+    enemyArray[i].y += Math.sin(enemyArray[i].angle) * enemyArray[i].v;
+    enemyArray[i].x += Math.cos(enemyArray[i].angle) * enemyArray[i].v;
   }
 }
 
