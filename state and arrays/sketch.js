@@ -15,9 +15,12 @@ let yMove;
 let movingForward = false;
 let turningLeft = false;
 let turningRight = false;
+let enemyArray = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  noStroke();
+  window.setInterval(createEnemy, 1000);
 }
 
 function draw() {
@@ -26,14 +29,47 @@ function draw() {
   turnShip();
   moveShip();
   drawShip();
+  drawEnemy();
+  moveEnemy();
 }
 
 function drawShip() {
   push();
   translate(shipX, shipY);
   rotate(shipAngle);
+  fill("blue");
   triangle(30, 0, -30, 15, -30, -15);
   pop();
+}
+
+
+function createEnemy() {
+  let enemy = {
+    x: 0 ,
+    y: random(0, height),
+    angle: 0
+  };
+  enemyArray.push(enemy);
+}
+
+function drawEnemy() {
+  for (let i = 0; i < enemyArray.length; i++){
+    push();
+    translate(enemyArray[i].x, enemyArray[i].y);
+    rotate(enemyArray[i].angle);
+    fill("red");
+    triangle(20, 0, -20, 10, -20, -10);
+    pop();
+  }
+}
+
+function moveEnemy(){
+  for (let i = 0; i < enemyArray.length; i++){
+    enemyArray[i].angle = Math.atan2(shipY - enemyArray[i].y, shipX - enemyArray[i].x);
+
+    enemyArray[i].y += Math.sin(enemyArray[i].angle) * 3;;
+    enemyArray[i].x += Math.cos(enemyArray[i].angle) * 3;;
+  }
 }
 
 function turnShip() {
@@ -49,7 +85,7 @@ function turnShip() {
 }
 
 function moveShip() {
-  
+
   yMove = Math.sin(shipAngle) * shipV;
   xMove = Math.cos(shipAngle) * shipV;
   if (movingForward){
