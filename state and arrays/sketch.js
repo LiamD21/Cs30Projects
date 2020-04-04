@@ -18,37 +18,56 @@ let turningRight = false;
 let enemyArray = [];
 let shipVectors;
 let enemyVectors;
+let hit = false;
+let homeScreen = true;
+let playingGame = false;
+let gameOver = false;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   noStroke();
   window.setInterval(createEnemy, 2000);
-
-  shipVectors = [createVector(30, 0), createVector(-30, 20), createVector(-15, 0), createVector(-30, -20)];
-  enemyVectors = [createVector(20, 0), createVector(-20, -10), createVector(-20, 10)];
 }
 
 function draw() {
   background(220);
 
-  turnShip();
-  moveShip();
-  drawShip();
-  drawEnemy();
-  moveEnemy();
+  if (playingGame){
+    turnShip();
+    moveShip();
+    drawShip();
+    drawEnemy();
+    moveEnemy();
+    detectHit();
+  }
 }
 
 function drawShip() {
+  shipVectors = [createVector(30, 0), createVector(-30, 20), createVector(-15, 0), createVector(-30, -20)];
+
   push();
   translate(shipX, shipY);
   rotate(shipAngle);
   fill("blue");
   beginShape();
-  for (let i = 0; i < shipVectors.length; i++){
+  for (let i = 0; i < shipVectors.length; i++){ 
     vertex(shipVectors[i].x, shipVectors[i].y);
   }
   endShape(CLOSE);
   pop();
+}
+
+function detectHit(){
+  shipVectors = [createVector(30 + shipX, 0 + shipY), createVector(-30 + shipX, 20 + shipY), createVector(-15 + shipX, 0 + shipY), createVector(-30 + shipX, -20 + shipY)];
+
+  for (let i = 0; i < enemyArray.length; i++){
+
+    hit = collideCirclePoly(enemyArray[i].x, enemyArray[i].y, 50, shipVectors);
+
+    if (hit){
+      background("red");
+    }
+  }
 }
 
 
@@ -58,25 +77,16 @@ function createEnemy() {
     x: 0,
     y: random(0, height),
     angle: 0,
-    v: random(2, 3.5),
-    type: "red"
+    v: random(2, 4.5),
   };
   enemyArray.push(enemy);
 }
 
 function drawEnemy() {
   for (let i = 0; i < enemyArray.length; i++){
-    push();
-    translate(enemyArray[i].x, enemyArray[i].y);
-    rotate(enemyArray[i].angle);
-
     fill("red");
-    beginShape();
-    for (let i = 0; i < enemyVectors.length; i++){
-      vertex(enemyVectors[i].x, enemyVectors[i].y);
-    }
-    endShape(CLOSE);
-    pop();
+    ellipse(enemyArray[i].x, enemyArray[i].y, 50, 50);
+
   }
 }
 
