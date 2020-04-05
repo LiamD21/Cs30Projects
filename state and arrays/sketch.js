@@ -9,7 +9,7 @@ let shipX = 200;
 let shipY = 200;
 let SHIP;
 let shipAngle = 0;
-let shipV = 6;
+let shipV = 8;
 let xMove;
 let yMove;
 let movingForward = false;
@@ -22,24 +22,60 @@ let hit = false;
 let homeScreen = true;
 let playingGame = false;
 let gameOver = false;
+let overStartButton = false;
+let lastEnemyCreated = 0;
+let bulletArray = [];
+let shootBullet;
+let bomb = false;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
   noStroke();
-  window.setInterval(createEnemy, 2000);
+  textAlign(CENTER);
+  rectMode(CENTER);    
+  createCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
   background(220);
+  if (homeScreen){
+    createCanvas(windowWidth, windowHeight);
+    drawHomeScreen();
+    }
 
   if (playingGame){
+    addEnemies();
     turnShip();
     moveShip();
     drawShip();
     drawEnemy();
     moveEnemy();
     detectHit();
+    shipShoots();
+    drawBullets();
+    useBomb();
   }
+}
+
+function drawHomeScreen(){
+  textSize(width/8);
+  fill("blue");
+  text("Aliens", width/2, height*2/5);
+
+  overStartButton = collidePointRect(mouseX, mouseY,width/2 - width/14, height*2/3 - height/20, width/7, height/10);
+
+  stroke("black");
+  strokeWeight(6);
+  if (!overStartButton){
+    fill(66, 236, 245);
+  }
+  else{
+    fill(130, 100, 255);
+  }
+  rect(width/2, height*2/3, width/7, height/10);
+  noStroke();
+  fill("black");
+  textSize(width/25);
+  text("START", width/2, height*11/16);
 }
 
 function drawShip() {
@@ -77,9 +113,16 @@ function createEnemy() {
     x: 0,
     y: random(0, height),
     angle: 0,
-    v: random(2, 4.5),
+    v: random(2, 3),
   };
   enemyArray.push(enemy);
+}
+
+function addEnemies(){
+  if (millis() - lastEnemyCreated >= 2000){
+    createEnemy();
+    lastEnemyCreated = millis();
+  }
 }
 
 function drawEnemy() {
@@ -101,10 +144,10 @@ function moveEnemy(){
 
 function turnShip() {
   if (turningRight){
-    shipAngle += 0.08;
+    shipAngle += 0.1;
   }
   if (turningLeft){
-    shipAngle -= 0.08;
+    shipAngle -= 0.1;
   }
   if (shipAngle > 2*PI || shipAngle < -2*PI){
     shipAngle = 0;
@@ -119,6 +162,53 @@ function moveShip() {
     shipY += yMove;
     shipX += xMove;
   }
+}
+
+function shipShoots(){
+  if (shootBullet){
+    let bullet = {
+      x: shipX,
+      y: shipY,
+      vx: xMove * 5,
+      vy: yMove * 5
+    };
+
+    bulletArray.push(bullet);
+    shootBullet = false;
+  }
+}
+
+function drawBullets(){
+  fill("black");
+  for (let i = 0; i < bulletArray.length; i++){
+    ellipse(bulletArray[i].x, bulletArray[i].y, 10, 10);
+    bulletArray[i].x += bulletArray[i].vx;
+    bulletArray[i].y += bulletArray[i].vy;
+
+    for (let j = 0; j < enemyArray.length; j++){
+
+      if (collideCircleCircle(bulletArray[i].x, bulletArray[i].y, 10, enemyArray[j].x, enemyArray[j].y, 50)){
+        enemyArray.splice(j, 1);
+        bulletArray.splice(i, 1);
+      }
+    }
+  }
+}
+
+function useBomb(){
+  let bombR = 10;
+  let bombX = shipX;
+  let bombY = shipY;
+  if (bomb){
+    for (let i = 0; i < 4000; i ++){
+      ellipse(bombX, bombY, bombR, bombR);
+      stroke("black");
+      fill(0, 0, 0, 255);
+      bombR += 0.1;
+    }
+  }
+  bomb = false;
+  noStroke();
 }
 
 function keyPressed(){
@@ -142,5 +232,18 @@ function keyReleased(){
   }
   if (key === "w"){
     movingForward = false;
+  }
+  if (key === " "){
+    shootBullet = true;
+  }
+  if (key === "e"){
+    bomb = true;
+  }
+}
+
+function mouseClicked(){
+  if (overStartButton){
+    homeScreen = false;
+    playingGame = true;
   }
 }
