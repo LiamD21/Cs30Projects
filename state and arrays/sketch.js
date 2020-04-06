@@ -26,7 +26,6 @@ let overStartButton = false;
 let lastEnemyCreated = 0;
 let bulletArray = [];
 let shootBullet;
-let bomb = false;
 
 function setup() {
   noStroke();
@@ -52,7 +51,6 @@ function draw() {
     detectHit();
     shipShoots();
     drawBullets();
-    useBomb();
   }
 }
 
@@ -129,7 +127,6 @@ function drawEnemy() {
   for (let i = 0; i < enemyArray.length; i++){
     fill("red");
     ellipse(enemyArray[i].x, enemyArray[i].y, 50, 50);
-
   }
 }
 
@@ -195,22 +192,6 @@ function drawBullets(){
   }
 }
 
-function useBomb(){
-  let bombR = 10;
-  let bombX = shipX;
-  let bombY = shipY;
-  if (bomb){
-    for (let i = 0; i < 4000; i ++){
-      ellipse(bombX, bombY, bombR, bombR);
-      stroke("black");
-      fill(0, 0, 0, 255);
-      bombR += 0.1;
-    }
-  }
-  bomb = false;
-  noStroke();
-}
-
 function keyPressed(){
   if (key === "a"){
     turningLeft = true;
@@ -235,9 +216,6 @@ function keyReleased(){
   }
   if (key === " "){
     shootBullet = true;
-  }
-  if (key === "e"){
-    bomb = true;
   }
 }
 
