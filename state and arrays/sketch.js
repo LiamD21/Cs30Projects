@@ -183,8 +183,11 @@ function drawBullets(){
     bulletArray[i].y += bulletArray[i].vy;
 
     for (let j = 0; j < enemyArray.length; j++){
-
-      if (collideCircleCircle(bulletArray[i].x, bulletArray[i].y, 10, enemyArray[j].x, enemyArray[j].y, 50)){
+      let hit = collideCircleCircle(bulletArray[i].x, bulletArray[i].y, 10, enemyArray[j].x, enemyArray[j].y, 50)
+      console.log(hit);
+      if (hit){
+        console.log(bulletArray[i]);
+        console.log(enemyArray[j]);
         enemyArray.splice(j, 1);
         bulletArray.splice(i, 1);
       }
@@ -217,9 +220,16 @@ function keyReleased(){
   if (key === " "){
     shootBullet = true;
   }
+  if (key === "r"){
+    if (overStartButton){
+      homeScreen = false;
+      playingGame = true;
+    }
+  }
 }
 
 function mouseClicked(){
+  console.log("clicked");
   if (overStartButton){
     homeScreen = false;
     playingGame = true;
