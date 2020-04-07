@@ -177,17 +177,18 @@ function shipShoots(){
 
 function drawBullets(){
   fill("black");
-  for (let i = 0; i < bulletArray.length; i++){
+  for (let i = bulletArray.length - 1; i >= 0; i--){
     ellipse(bulletArray[i].x, bulletArray[i].y, 10, 10);
     bulletArray[i].x += bulletArray[i].vx;
     bulletArray[i].y += bulletArray[i].vy;
 
-    for (let j = 0; j < enemyArray.length; j++){
+    for (let j = enemyArray.length  -1; j >= 0; j--){
+      console.log(i);
+      console.log(bulletArray);
+
       let hit = collideCircleCircle(bulletArray[i].x, bulletArray[i].y, 10, enemyArray[j].x, enemyArray[j].y, 50)
       console.log(hit);
       if (hit){
-        console.log(bulletArray[i]);
-        console.log(enemyArray[j]);
         enemyArray.splice(j, 1);
         bulletArray.splice(i, 1);
       }
