@@ -187,7 +187,6 @@ function drawBullets(){
       console.log(bulletArray);
 
       let hit = collideCircleCircle(bulletArray[i].x, bulletArray[i].y, 10, enemyArray[j].x, enemyArray[j].y, 50)
-      console.log(hit);
       if (hit){
         enemyArray.splice(j, 1);
         bulletArray.splice(i, 1);
@@ -220,12 +219,6 @@ function keyReleased(){
   }
   if (key === " "){
     shootBullet = true;
-  }
-  if (key === "r"){
-    if (overStartButton){
-      homeScreen = false;
-      playingGame = true;
-    }
   }
 }
 
