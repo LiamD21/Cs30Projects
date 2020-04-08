@@ -5,8 +5,8 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let shipX = 200;
-let shipY = 200;
+let shipX;
+let shipY;
 let SHIP;
 let shipAngle = 0;
 let shipV = 8;
@@ -26,22 +26,37 @@ let overStartButton = false;
 let lastEnemyCreated = 0;
 let bulletArray = [];
 let shootBullet;
+let overRestartButton = false;
+let milkyWay;
+let gameStartTime;
+let score = 0;
+let seconds;
+let totalScore;
+
+function preload(){
+  milkyWay = loadImage("assets/milkyWay.jpg")
+}
 
 function setup() {
   noStroke();
   textAlign(CENTER);
   rectMode(CENTER);    
   createCanvas(windowWidth, windowHeight);
+
+  shipY = height/2;
+  shipX = width/2;
 }
 
 function draw() {
-  background(220);
   if (homeScreen){
     createCanvas(windowWidth, windowHeight);
+    imageMode(CENTER);
+    image(milkyWay, width/2, height/2, width, height);
     drawHomeScreen();
     }
 
   if (playingGame){
+    background(200);
     addEnemies();
     turnShip();
     moveShip();
@@ -51,12 +66,19 @@ function draw() {
     detectHit();
     shipShoots();
     drawBullets();
+    keepScore();
+  }
+
+  if (gameOver){
+    createCanvas(windowWidth, windowHeight);
+    image(milkyWay, width/2, height/2, width, height);
+    drawGameOver();
   }
 }
 
 function drawHomeScreen(){
   textSize(width/8);
-  fill("blue");
+  fill("white");
   text("Aliens", width/2, height*2/5);
 
   overStartButton = collidePointRect(mouseX, mouseY,width/2 - width/14, height*2/3 - height/20, width/7, height/10);
@@ -74,6 +96,28 @@ function drawHomeScreen(){
   fill("black");
   textSize(width/25);
   text("START", width/2, height*11/16);
+}
+
+function drawGameOver(){
+  textSize(width/8);
+  fill("red");
+  text("Game Over", width/2, height*2/5);
+
+  overRestartButton = collidePointRect(mouseX, mouseY,width/2 - width/14, height*2/3 - height/20, width/5, height/10);
+
+  stroke("black");
+  strokeWeight(6);
+  if (!overRestartButton){
+    fill(66, 236, 245);
+  }
+  else{
+    fill(130, 100, 255);
+  }
+  rect(width/2, height*2/3, width/5, height/10);
+  noStroke();
+  fill("black");
+  textSize(width/25);
+  text("RESTART", width/2, height*11/16);
 }
 
 function drawShip() {
@@ -99,7 +143,8 @@ function detectHit(){
     hit = collideCirclePoly(enemyArray[i].x, enemyArray[i].y, 50, shipVectors);
 
     if (hit){
-      background("red");
+      playingGame = false;
+      gameOver = true;
     }
   }
 }
@@ -183,17 +228,30 @@ function drawBullets(){
     bulletArray[i].y += bulletArray[i].vy;
 
     for (let j = enemyArray.length  -1; j >= 0; j--){
-      console.log(i);
-      console.log(bulletArray);
-
       let hit = collideCircleCircle(bulletArray[i].x, bulletArray[i].y, 10, enemyArray[j].x, enemyArray[j].y, 50)
       if (hit){
         enemyArray.splice(j, 1);
         bulletArray.splice(i, 1);
+        score += 20;
+        break;
       }
     }
   }
 }
+function keepScore(){
+  seconds = (millis() - gameStartTime)/1000;
+  seconds = floor(seconds);
+
+  totalScore = seconds + score;
+
+  textSize(width/30);
+  textAlign(LEFT);
+  fill("white");
+  text(totalScore, width/50, height/15);
+  textAlign(CENTER);
+}
+
+
 
 function keyPressed(){
   if (key === "a"){
@@ -223,9 +281,18 @@ function keyReleased(){
 }
 
 function mouseClicked(){
-  console.log("clicked");
-  if (overStartButton){
+  if (overStartButton && homeScreen){
     homeScreen = false;
+    playingGame = true;
+    gameStartTime = millis();
+  }
+  if (overRestartButton && gameOver){
+    gameOver = false;
+    enemyArray = [];
+    bulletArray = [];
+    shipX = width/2;
+    shipY = height/2;
+    gameStartTime= millis();
     playingGame = true;
   }
 }
