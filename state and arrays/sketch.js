@@ -32,6 +32,11 @@ let gameStartTime;
 let score = 0;
 let seconds;
 let totalScore;
+let numbersArray = [];
+let bomb = false;
+let bombX; 
+let bombY;
+let bombSize = 10;
 
 function preload(){
   milkyWay = loadImage("assets/milkyWay.jpg")
@@ -67,6 +72,9 @@ function draw() {
     shipShoots();
     drawBullets();
     keepScore();
+    writeScoreOnKill();
+    useBomb();
+    checkBombHit();
   }
 
   if (gameOver){
@@ -223,13 +231,21 @@ function shipShoots(){
 function drawBullets(){
   fill("black");
   for (let i = bulletArray.length - 1; i >= 0; i--){
-    ellipse(bulletArray[i].x, bulletArray[i].y, 10, 10);
+    ellipse(bulletArray[i].x, bulletArray[i].y, 20, 20);
     bulletArray[i].x += bulletArray[i].vx;
     bulletArray[i].y += bulletArray[i].vy;
 
     for (let j = enemyArray.length  -1; j >= 0; j--){
-      let hit = collideCircleCircle(bulletArray[i].x, bulletArray[i].y, 10, enemyArray[j].x, enemyArray[j].y, 50)
+      let hit = collideCircleCircle(bulletArray[i].x, bulletArray[i].y, 20, enemyArray[j].x, enemyArray[j].y, 50)
       if (hit){
+        let number = {
+          x: enemyArray[j].x,
+          y: enemyArray[j].y,
+          score: "+20",
+          size: 100
+        };
+        numbersArray.push(number);
+
         enemyArray.splice(j, 1);
         bulletArray.splice(i, 1);
         score += 20;
@@ -238,6 +254,21 @@ function drawBullets(){
     }
   }
 }
+
+function writeScoreOnKill(){
+  for (let i = numbersArray.length - 1; i >= 0; i--){
+    fill("red");
+    textSize(width/numbersArray[i].size);
+    text(numbersArray[i].score, numbersArray[i].x, numbersArray[i].y);
+    if (numbersArray[i].size > 40){
+      numbersArray[i].size --;
+    }
+    else{
+      numbersArray.splice(i, 1);
+    }
+  }
+}
+
 function keepScore(){
   seconds = (millis() - gameStartTime)/1000;
   seconds = floor(seconds);
@@ -249,6 +280,38 @@ function keepScore(){
   fill("white");
   text(totalScore, width/50, height/15);
   textAlign(CENTER);
+}
+
+function useBomb(){
+  if (bomb){
+    fill("white");
+    ellipse(bombX, bombY, bombSize, bombSize);
+    if (bombSize < 400){
+      bombSize += 10;
+    }
+    else{
+      bomb = false;
+    }
+  }
+}
+
+function checkBombHit(){
+  for (let i = enemyArray.length - 1; i >= 0; i--){
+    hit = collideCircleCircle(enemyArray[i].x, enemyArray[i].y, 50, bombX, bombY, bombSize);
+
+    if (hit && bomb){
+
+    let number = {
+      x: enemyArray[i].x,
+      y: enemyArray[i].y,
+      score: "+10",
+      size: 100
+    };
+    enemyArray.splice(i, 1);
+    numbersArray.push(number);
+    score += 10;
+    }
+  }
 }
 
 
@@ -278,6 +341,12 @@ function keyReleased(){
   if (key === " "){
     shootBullet = true;
   }
+  if (key === "e"){
+    bomb = true;
+    bombSize= 10;
+    bombX = shipX;
+    bombY= shipY;
+  }
 }
 
 function mouseClicked(){
@@ -293,6 +362,9 @@ function mouseClicked(){
     shipX = width/2;
     shipY = height/2;
     gameStartTime= millis();
+    score = 0;
+    numbersArray = [];
+    bomb = false;
     playingGame = true;
   }
 }
