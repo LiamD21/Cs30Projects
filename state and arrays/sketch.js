@@ -37,9 +37,12 @@ let bomb = false;
 let bombX; 
 let bombY;
 let bombSize = 10;
+let lastBomb = 0;
+let instructions = false;
+let overPlayButton = false;
 
 function preload(){
-  milkyWay = loadImage("assets/milkyWay.jpg")
+  milkyWay = loadImage("assets/milkyWay.jpg");
 }
 
 function setup() {
@@ -54,11 +57,14 @@ function setup() {
 
 function draw() {
   if (homeScreen){
-    createCanvas(windowWidth, windowHeight);
-    imageMode(CENTER);
-    image(milkyWay, width/2, height/2, width, height);
+    imageBackground();
     drawHomeScreen();
     }
+  
+  if (instructions){
+    background(220);
+    drawInstructionScreen();
+  }
 
   if (playingGame){
     background(200);
@@ -75,13 +81,19 @@ function draw() {
     writeScoreOnKill();
     useBomb();
     checkBombHit();
+    //bombTimeLeft();
   }
 
   if (gameOver){
-    createCanvas(windowWidth, windowHeight);
-    image(milkyWay, width/2, height/2, width, height);
+    imageBackground();
     drawGameOver();
   }
+}
+
+function imageBackground(){
+  createCanvas(windowWidth, windowHeight);
+  imageMode(CENTER);
+  image(milkyWay, width/2, height/2, width, height);
 }
 
 function drawHomeScreen(){
@@ -104,6 +116,30 @@ function drawHomeScreen(){
   fill("black");
   textSize(width/25);
   text("START", width/2, height*11/16);
+}
+
+function drawInstructionScreen(){
+  overPlayButton = collidePointRect(mouseX, mouseY,width/2 - width/14, height*2/3 - height/20, width/7, height/10);
+
+  stroke("black");
+  strokeWeight(6);
+  if (!overPlayButton){
+    fill(66, 236, 245);
+  }
+  else{
+    fill(130, 100, 255);
+  }
+  rect(width/2, height*2/3, width/7, height/10);
+  noStroke();
+  fill("black");
+  textSize(width/25);
+  text("PLAY", width/2, height*11/16);
+
+  textSize(width/40);
+  text("Use W to go forwards and A and D to turn", width/2, height/20);
+  text("Press SPACE to shoot at your enemies, eliminating one will give you 20 pts", width/2, height * 2/20);
+  text("every five seconds you can use your bomb by pressing E", width/2, height * 3/20);
+  text("The bomb will eliminate enemies in a raduis around you for 10 pts each", width/2, height * 4/20);
 }
 
 function drawGameOver(){
@@ -157,7 +193,6 @@ function detectHit(){
   }
 }
 
-
 function createEnemy() {
   
   let enemy = {
@@ -179,7 +214,7 @@ function addEnemies(){
 function drawEnemy() {
   for (let i = 0; i < enemyArray.length; i++){
     fill("red");
-    ellipse(enemyArray[i].x, enemyArray[i].y, 50, 50);
+    ellipse(enemyArray[i].x, enemyArray[i].y, 75, 75);
   }
 }
 
@@ -236,7 +271,7 @@ function drawBullets(){
     bulletArray[i].y += bulletArray[i].vy;
 
     for (let j = enemyArray.length  -1; j >= 0; j--){
-      let hit = collideCircleCircle(bulletArray[i].x, bulletArray[i].y, 20, enemyArray[j].x, enemyArray[j].y, 50)
+      let hit = collideCircleCircle(bulletArray[i].x, bulletArray[i].y, 20, enemyArray[j].x, enemyArray[j].y, 75)
       if (hit){
         let number = {
           x: enemyArray[j].x,
@@ -288,6 +323,7 @@ function useBomb(){
     ellipse(bombX, bombY, bombSize, bombSize);
     if (bombSize < 400){
       bombSize += 10;
+      lastBomb = millis();
     }
     else{
       bomb = false;
@@ -297,7 +333,7 @@ function useBomb(){
 
 function checkBombHit(){
   for (let i = enemyArray.length - 1; i >= 0; i--){
-    hit = collideCircleCircle(enemyArray[i].x, enemyArray[i].y, 50, bombX, bombY, bombSize);
+    hit = collideCircleCircle(enemyArray[i].x, enemyArray[i].y, 75, bombX, bombY, bombSize);
 
     if (hit && bomb){
 
@@ -313,6 +349,9 @@ function checkBombHit(){
     }
   }
 }
+
+// function bombTimeLeft(){
+// }
 
 
 
@@ -342,19 +381,27 @@ function keyReleased(){
     shootBullet = true;
   }
   if (key === "e"){
-    bomb = true;
-    bombSize= 10;
-    bombX = shipX;
-    bombY= shipY;
+    if (millis() - lastBomb > 5000){
+      bomb = true;
+      bombSize= 10;
+      bombX = shipX;
+      bombY= shipY;
+    }
   }
 }
 
 function mouseClicked(){
   if (overStartButton && homeScreen){
     homeScreen = false;
+    instructions = true;
+  }
+
+  if (overPlayButton && instructions){
+    instructions = false;
     playingGame = true;
     gameStartTime = millis();
   }
+
   if (overRestartButton && gameOver){
     gameOver = false;
     enemyArray = [];
