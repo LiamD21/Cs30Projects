@@ -40,6 +40,7 @@ let bombSize = 10;
 let lastBomb = 0;
 let instructions = false;
 let overPlayButton = false;
+let bombTimer = 0;
 
 function preload(){
   milkyWay = loadImage("assets/milkyWay.jpg");
@@ -81,7 +82,7 @@ function draw() {
     writeScoreOnKill();
     useBomb();
     checkBombHit();
-    //bombTimeLeft();
+    bombTimeLeft();
   }
 
   if (gameOver){
@@ -350,8 +351,24 @@ function checkBombHit(){
   }
 }
 
-// function bombTimeLeft(){
-// }
+function bombTimeLeft(){
+  bombTimer = (millis() - lastBomb)/1000;
+  bombTimer = floor(bombTimer);
+  bombTimer = 5 - bombTimer;
+
+  textSize(width/30);
+  textAlign(RIGHT);
+  fill("black");
+
+  if(bombTimer > 0){
+    text(bombTimer, width * 49/50, height/15);
+  }
+  else if (bombTimer <= 0){
+    text("READY", width * 49/50, height/15);
+  }
+
+  textAlign(CENTER);
+}
 
 
 
@@ -400,6 +417,7 @@ function mouseClicked(){
     instructions = false;
     playingGame = true;
     gameStartTime = millis();
+    lastBomb = 0;
   }
 
   if (overRestartButton && gameOver){
@@ -412,6 +430,7 @@ function mouseClicked(){
     score = 0;
     numbersArray = [];
     bomb = false;
+    lastBomb = 0;
     playingGame = true;
   }
 }
