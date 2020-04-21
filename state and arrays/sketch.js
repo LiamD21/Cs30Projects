@@ -5,6 +5,7 @@
 // Extra for Experts:
 // I have a very basic enemy AI, the enemy following around to attempt to beat the player
 // I have also translate and rotate to turn the player's Ship
+// the home screen and game over screen will scale based on the window size
 
 //variables
 let shipX;
