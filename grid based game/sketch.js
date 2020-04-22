@@ -6,80 +6,75 @@
 // - describe what you did to take this project "above and beyond"
 
 let cols = 10;
-let rows = 20;
-let cellSize = 45;
-let colors = [];
+let rows = 10;
+let cellSize = 50;
+let mySide = [];
+let enemySide = [];
+let yOffsetMe;
+let yOffsetEnemy;
 let xOffset;
-let yOffset;
-let shapeType;
-let blockStartX;
-let readyForBlock = true;
-let lastHitBottom = 0;
-let iToMOve = [];
+let OCEAN = [17, 163, 207];
+let mini;
+let small;
+let sub;
+let big;
+let aircraftCarrier
+
+function preload() {
+  mini = loadImage("assets/mini.png")
+  small = loadImage("assets/small.png")
+  big = loadImage("assets/big.png")
+  aircraftCarrier = loadImage("assets/aircraftcarrier.png")
+  sub = loadImage("assets/sub.png")
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  strokeWeight(2);
 
-  yOffset = height/2 - (cellSize * (rows/2));
+  yOffsetMe = height*3/4 - (cellSize * (rows/2));
+  yOffsetEnemy = height/4 - (cellSize * (rows/2));
   xOffset =  width/2 - (cellSize * (cols/2));
 
   for (let i = 0; i < cols; i++){
-    colors[i] = [];
+    mySide[i] = [];
     for (let j = 0; j < rows; j++){
-      colors[i][j] = "White";
+    }
+  }
+
+  for (let k = 0; k < cols; k++){
+    enemySide[k] = [];
+    for (let l = 0; l < rows; l++){
     }
   }
 }
 
 function draw() {
   background(220);
-  createGrid();
-  spawnTimer();
+  createGrids();
+  drawShips();
 }
 
-function createGrid(){
+function createGrids(){
   for (let i = 0; i < cols; i++){
     for (let j = 0; j < rows; j++){
-      fill(colors[i][j])
-      rect(cellSize * i + xOffset, cellSize * j + yOffset, cellSize, cellSize);
+      fill(OCEAN);
+      rect(cellSize * i + xOffset, cellSize * j + yOffsetMe, cellSize, cellSize);
+    }
+  }
+
+  for (let k = 0; k < cols; k++){
+    for (let l = 0; l < rows; l++){
+      fill(OCEAN);
+      rect(cellSize * k + xOffset, cellSize * l + yOffsetEnemy, cellSize, cellSize);
     }
   }
 }
 
-function addShape() {
-  blockStartX = round(random(6));
-  shapeType = round(random(6));
-  // types are: 0 - flat, 1 - box, 2 - L, 3 - reverse L, 4 - T, 5 - S, 6 - Z
-  shapeType = 0;
-
-  if (shapeType === 0){
-    for (let b = 0; b < 4; b++){
-      colors[blockStartX + b][1] = "red";
-    }
-  }
-}
-
-function moveDownShape(){
-  for (let i = 0; i < cols; i++){
-    for (let j = 0; j < rows; j++){
-      if (colors[i][j] !== "white"){
-        colors[i][j] = "white";
-        colors[i+1][j] = "red";
-      }
-    }
-  }
-}
-
-function spawnTimer(){
-  if (lastHitBottom + 1500 < millis() && readyForBlock){
-    addShape();
-    lastHitBottom = millis();
-    readyForBlock = false;
-  }
-}
-
-function keyReleased(){
-  if (key === " "){
-    moveDownShape();
-  }
+function drawShips(){
+  image(mini, 100, 100, mini.width * 0.65, mini.height * 0.65);
+  image(small, 100, 150, small.width * 0.65, small.height * 0.65);
+  image(big, 100, 250, big.width * 0.65, big.height * 0.65);
+  image(sub, 100, 200, sub.width * 0.6, sub.height * 0.65);
+  image(aircraftCarrier, 100, 300, aircraftCarrier.width * 0.6, aircraftCarrier.height * 0.6);
 }
