@@ -5,76 +5,73 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let cols = 10;
-let rows = 10;
-let cellSize = 50;
-let mySide = [];
-let enemySide = [];
-let yOffsetMe;
-let yOffsetEnemy;
+let cols = 8;
+let rows = 8;
+let cellSize;
+let grid = [];
+let yOffset;
 let xOffset;
-let OCEAN = [17, 163, 207];
-let mini;
-let small;
-let sub;
-let big;
-let aircraftCarrier
+let BEIGE = [207, 185, 157];
+let patternCount = 0;
 
-function preload() {
-  mini = loadImage("assets/mini.png")
-  small = loadImage("assets/small.png")
-  big = loadImage("assets/big.png")
-  aircraftCarrier = loadImage("assets/aircraftcarrier.png")
-  sub = loadImage("assets/sub.png")
-}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   strokeWeight(2);
+  rectMode(CENTER);
 
-  yOffsetMe = height*3/4 - (cellSize * (rows/2));
-  yOffsetEnemy = height/4 - (cellSize * (rows/2));
-  xOffset =  width/2 - (cellSize * (cols/2));
+  cellSize = height / 12;
+
+  yOffset = height/2 - (cellSize * (rows/2)) + cellSize/2;
+  xOffset =  width/2 - (cellSize * (cols/2)) + cellSize/2;
 
   for (let i = 0; i < cols; i++){
-    mySide[i] = [];
+    grid[i] = [];
     for (let j = 0; j < rows; j++){
-    }
-  }
-
-  for (let k = 0; k < cols; k++){
-    enemySide[k] = [];
-    for (let l = 0; l < rows; l++){
+      grid[i][j] = "empty";
     }
   }
 }
+
 
 function draw() {
   background(220);
-  createGrids();
-  drawShips();
+  createGrid();
+  addCheckers();
 }
 
-function createGrids(){
+function createGrid(){
   for (let i = 0; i < cols; i++){
+    patternCount ++;
     for (let j = 0; j < rows; j++){
-      fill(OCEAN);
-      rect(cellSize * i + xOffset, cellSize * j + yOffsetMe, cellSize, cellSize);
-    }
-  }
+      patternCount ++;
 
-  for (let k = 0; k < cols; k++){
-    for (let l = 0; l < rows; l++){
-      fill(OCEAN);
-      rect(cellSize * k + xOffset, cellSize * l + yOffsetEnemy, cellSize, cellSize);
+      if (patternCount % 2 === 0){
+        fill(BEIGE);
+      }
+      else{
+        fill("black");
+      }
+
+      rect(cellSize * i + xOffset, cellSize * j + yOffset, cellSize, cellSize);
     }
   }
 }
 
-function drawShips(){
-  image(mini, 100, 100, mini.width * 0.65, mini.height * 0.65);
-  image(small, 100, 150, small.width * 0.65, small.height * 0.65);
-  image(big, 100, 250, big.width * 0.65, big.height * 0.65);
-  image(sub, 100, 200, sub.width * 0.6, sub.height * 0.65);
-  image(aircraftCarrier, 100, 300, aircraftCarrier.width * 0.6, aircraftCarrier.height * 0.6);
+function addCheckers(){
+  for (let i = 0; i < cols; i++){
+    for (let j = 0; j < 2; j++){
+      fill("red");
+      ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8, cellSize * 5/6);
+      grid[i][j] = "enemy";
+    }
+  }
+
+  for (let i = 0; i < cols; i++){
+    for (let j = 6; j < 8; j++){
+      fill("blue");
+      ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8, cellSize * 5/6);
+      grid[i][j] = "player";
+    }
+  }
 }
