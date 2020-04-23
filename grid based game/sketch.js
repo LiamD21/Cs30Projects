@@ -14,8 +14,8 @@ let xOffset;
 let BEIGE = [207, 185, 157];
 let patternCount = 0;
 let selecting = false;
-let selectingI = 0;
-let selectingJ = 0;
+let selectingI;
+let selectingJ;
 let selected = false;
 
 function setup() {
@@ -55,6 +55,7 @@ function createGrid(){
 
       if (patternCount % 2 === 0){
         fill(BEIGE);
+        grid[i][j] = "empty";
       }
       else{
         fill("black");
@@ -67,13 +68,13 @@ function createGrid(){
 
 function setupGrid(){
   for (let i = 0; i < cols; i++){
-    for (let j = 0; j < 2; j++){
+    for (let j = 0; j < 3; j++){
       grid[i][j] = "enemy";
     }
   }
 
   for (let i = 0; i < cols; i++){
-    for (let j = 6; j < 8; j++){
+    for (let j = 5; j < 8; j++){
       grid[i][j] = "player";
     }
   }
@@ -98,7 +99,7 @@ function choosePiece(){
   for (let i = 0; i < cols; i++){
     for (let j = 0; j < rows; j++){
       if (collidePointRect(mouseX, mouseY, cellSize * i + xOffset - cellSize/2, cellSize * j + yOffset - cellSize/2, cellSize, cellSize)){
-        if (grid[i][j] === "player"){
+        if (grid[i][j] === "player" && !selected){
           strokeWeight(8);
           stroke("yellow");
           fill("blue")
@@ -117,7 +118,19 @@ function choosePiece(){
 }
 
 function movePiece(){
+  if (selected){
+    stroke("yellow");
+    ellipse(cellSize * selectingI + xOffset, cellSize * selectingJ +yOffset, cellSize * 7/8, cellSize * 5/6);
 
+    fill("black")
+    if (selectingI !== 0){
+      rect(cellSize * (selectingI - 1) + xOffset, cellSize * (selectingJ - 1) + yOffset, cellSize, cellSize)
+    }
+    if (selectingI !==7){
+      rect(cellSize * (selectingI + 1) + xOffset, cellSize * (selectingJ - 1) + yOffset, cellSize, cellSize)
+    }
+    noStroke();
+  }
 }
 
 function mouseClicked(){
