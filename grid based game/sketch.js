@@ -123,10 +123,10 @@ function movePiece(){
     ellipse(cellSize * selectingI + xOffset, cellSize * selectingJ +yOffset, cellSize * 7/8, cellSize * 5/6);
 
     fill("black")
-    if (selectingI !== 0){
+    if (selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "empty"){
       rect(cellSize * (selectingI - 1) + xOffset, cellSize * (selectingJ - 1) + yOffset, cellSize, cellSize)
     }
-    if (selectingI !==7){
+    if (selectingI !==7 && grid[selectingI + 1][selectingJ - 1] === "empty"){
       rect(cellSize * (selectingI + 1) + xOffset, cellSize * (selectingJ - 1) + yOffset, cellSize, cellSize)
     }
     noStroke();
@@ -137,5 +137,12 @@ function mouseClicked(){
   if(selecting){
     selected = true;
     selecting = false;
+  }
+}
+
+function keyPressed(){
+  if (key === " " && selected){
+    selected = false;
+    selecting = true;
   }
 }
