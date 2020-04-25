@@ -17,6 +17,8 @@ let selecting = false;
 let selectingI;
 let selectingJ;
 let selected = false;
+let moveRight = moveLeft = jumpRight = jumpLeft = false;
+let canMoveRight = canMoveLeft = canJumpRight = canJumpLeft = false;
 
 function setup() {
   strokeWeight(2);
@@ -44,7 +46,23 @@ function draw() {
   createGrid();
   addCheckers();
   choosePiece();
+  pickMove();
   movePiece();
+}
+
+function setupGrid(){
+  for (let i = 0; i < cols; i++){
+    for (let j = 0; j < 3; j++){
+      grid[i][j] = "enemy";
+    }
+  }
+
+  for (let i = 0; i < cols; i++){
+    for (let j = 5; j < 8; j++){
+      grid[i][j] = "player";
+    }
+  }
+  grid[3][4] = "enemy";
 }
 
 function createGrid(){
@@ -62,20 +80,6 @@ function createGrid(){
       }
 
       rect(cellSize * i + xOffset, cellSize * j + yOffset, cellSize, cellSize);
-    }
-  }
-}
-
-function setupGrid(){
-  for (let i = 0; i < cols; i++){
-    for (let j = 0; j < 3; j++){
-      grid[i][j] = "enemy";
-    }
-  }
-
-  for (let i = 0; i < cols; i++){
-    for (let j = 5; j < 8; j++){
-      grid[i][j] = "player";
     }
   }
 }
@@ -117,7 +121,7 @@ function choosePiece(){
   }
 }
 
-function movePiece(){
+function pickMove(){
   if (selected){
     stroke("yellow");
     ellipse(cellSize * selectingI + xOffset, cellSize * selectingJ +yOffset, cellSize * 7/8, cellSize * 5/6);
@@ -125,17 +129,62 @@ function movePiece(){
     fill("black")
     if (selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "empty"){
       rect(cellSize * (selectingI - 1) + xOffset, cellSize * (selectingJ - 1) + yOffset, cellSize, cellSize);
+      canMoveLeft = true;
     }
     if (selectingI !==7 && grid[selectingI + 1][selectingJ - 1] === "empty"){
       rect(cellSize * (selectingI + 1) + xOffset, cellSize * (selectingJ - 1) + yOffset, cellSize, cellSize);
+      canMoveRight = true;
     }
     if( selectingI !== 6 && selectingI !== 7 && grid[selectingI + 1][selectingJ - 1] === "enemy" ){
-      rect(cellSize * (selectingI + 2) + xOffset, cellSize * (selectingJ - 2) + yOffset, cellSize, cellSize);
+      if(grid[selectingI + 2][selectingJ - 2] === "empty"){
+        rect(cellSize * (selectingI + 2) + xOffset, cellSize * (selectingJ - 2) + yOffset, cellSize, cellSize);
+        canJumpRight = true;
+      }
     }
-    if( selectingI !== 1 && selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "enemy" ){
-      rect(cellSize * (selectingI - 2) + xOffset, cellSize * (selectingJ - 2) + yOffset, cellSize, cellSize);
+    if(selectingI !== 1 && selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "enemy" ){
+      if(grid[selectingI - 2][selectingJ - 2] === "empty"){
+        rect(cellSize * (selectingI - 2) + xOffset, cellSize * (selectingJ - 2) + yOffset, cellSize, cellSize);
+        canJumpLeft = true;
+      }
     }
     noStroke();
+  }
+  if(!selected){
+    canJumpRight = false;
+    canJumpLeft = false;
+    canMoveLeft = false;
+    canMoveRight = false;
+  }
+}
+
+function movePiece(){
+  if (selected){
+    if(moveRight && canMoveRight){
+      grid[selectingI][selectingJ] = "empty";
+      grid[selectingI + 1][selectingJ - 1] = "player";
+      moveRight = false;
+      selected = false;
+    }
+    if(moveLeft && canMoveLeft){
+      grid[selectingI][selectingJ] = "empty";
+      grid[selectingI - 1][selectingJ - 1] = "player";
+      moveLeft = false;
+      selected = false;
+    }
+    if(jumpRight && canJumpRight){
+      grid[selectingI][selectingJ] = "empty";
+      grid[selectingI + 2][selectingJ - 2] = "player";
+      grid[selectingI + 1][selectingJ - 1] = "empty";
+      jumpRight = false;
+      selected = false;
+    }
+    if(jumpLeft && canJumpLeft){
+      grid[selectingI][selectingJ] = "empty";
+      grid[selectingI - 2][selectingJ - 2] = "player";
+      grid[selectingI - 1][selectingJ - 1] = "empty";
+      jumpLeft = false;
+      selected = false;
+    }
   }
 }
 
@@ -143,6 +192,25 @@ function mouseClicked(){
   if(selecting){
     selected = true;
     selecting = false;
+  }
+
+  if (selected){
+    //move left
+    if (collidePointRect(mouseX, mouseY, cellSize * (selectingI - 1) - cellSize/2 + xOffset, cellSize * (selectingJ - 1) + yOffset - cellSize/2, cellSize, cellSize)){
+      moveLeft = true;
+    }
+    //move right
+    if (collidePointRect(mouseX, mouseY, cellSize * (selectingI + 1) - cellSize/2 + xOffset, cellSize * (selectingJ - 1) + yOffset - cellSize/2, cellSize, cellSize)){
+      moveRight = true;
+    }
+    //jump left
+    if (collidePointRect(mouseX, mouseY, cellSize * (selectingI - 2) - cellSize/2 + xOffset, cellSize * (selectingJ - 2) + yOffset - cellSize/2, cellSize, cellSize)){
+      jumpLeft = true;
+    }
+    //jump right
+    if (collidePointRect(mouseX, mouseY, cellSize * (selectingI + 2) - cellSize/2 + xOffset, cellSize * (selectingJ - 2) + yOffset - cellSize/2, cellSize, cellSize)){
+      jumpRight = true;
+    }
   }
 }
 
