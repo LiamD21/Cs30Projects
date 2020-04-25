@@ -124,10 +124,16 @@ function movePiece(){
 
     fill("black")
     if (selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "empty"){
-      rect(cellSize * (selectingI - 1) + xOffset, cellSize * (selectingJ - 1) + yOffset, cellSize, cellSize)
+      rect(cellSize * (selectingI - 1) + xOffset, cellSize * (selectingJ - 1) + yOffset, cellSize, cellSize);
     }
     if (selectingI !==7 && grid[selectingI + 1][selectingJ - 1] === "empty"){
-      rect(cellSize * (selectingI + 1) + xOffset, cellSize * (selectingJ - 1) + yOffset, cellSize, cellSize)
+      rect(cellSize * (selectingI + 1) + xOffset, cellSize * (selectingJ - 1) + yOffset, cellSize, cellSize);
+    }
+    if( selectingI !== 6 && selectingI !== 7 && grid[selectingI + 1][selectingJ - 1] === "enemy" ){
+      rect(cellSize * (selectingI + 2) + xOffset, cellSize * (selectingJ - 2) + yOffset, cellSize, cellSize);
+    }
+    if( selectingI !== 1 && selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "enemy" ){
+      rect(cellSize * (selectingI - 2) + xOffset, cellSize * (selectingJ - 2) + yOffset, cellSize, cellSize);
     }
     noStroke();
   }
