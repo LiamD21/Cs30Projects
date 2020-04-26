@@ -19,38 +19,69 @@ let selectingJ;
 let selected = false;
 let moveRight = moveLeft = jumpRight = jumpLeft = false;
 let canMoveRight = canMoveLeft = canJumpRight = canJumpLeft = false;
+let startScreen = true;
+let playingGame = false;
+let overStartButton;
 
 function setup() {
   strokeWeight(2);
   rectMode(CENTER);
   noStroke();
+  textAlign(CENTER);
 
   createCanvas(windowWidth, windowHeight);
   cellSize = height / 10;
 
   yOffset = height/2 - (cellSize * (rows/2)) + cellSize/2;
   xOffset =  width/2 - (cellSize * (cols/2)) + cellSize/2;
+}
 
+
+function draw() {
+  background(220);
+  if (startScreen){
+    drawStartScreen();
+  }
+  if (playingGame){
+    createGrid();
+    addCheckers();
+    choosePiece();
+    pickMove();
+    movePiece();
+  }
+}
+
+function drawStartScreen(){
+  textSize(width/8);
+  fill("blue");
+  text("Checkers", width/2, height *2/5);
+
+  overStartButton = collidePointRect(mouseX, mouseY,width/2 - width/14, height*2/3 - height/20, width/7, height/10);
+
+  stroke("black");
+  strokeWeight(6);
+
+  if (!overStartButton){
+    fill("white");
+  }
+  else{
+    fill("grey");
+  }
+  rect(width/2, height*2/3, width/7, height/10);
+  noStroke();
+  fill("black");
+  textSize(width/25);
+  text("START", width/2, height*11/16);
+}
+
+function setupGrid(){
   for (let i = 0; i < cols; i++){
     grid[i] = [];
     for (let j = 0; j < rows; j++){
       grid[i][j] = "empty";
     }
   }
-  setupGrid();
-}
 
-
-function draw() {
-  background(220);
-  createGrid();
-  addCheckers();
-  choosePiece();
-  pickMove();
-  movePiece();
-}
-
-function setupGrid(){
   for (let i = 0; i < cols; i++){
     for (let j = 0; j < 3; j++){
       grid[i][j] = "enemy";
@@ -62,7 +93,6 @@ function setupGrid(){
       grid[i][j] = "player";
     }
   }
-  grid[3][4] = "enemy";
 }
 
 function createGrid(){
@@ -189,6 +219,11 @@ function movePiece(){
 }
 
 function mouseClicked(){
+  if (startScreen && overStartButton){
+    setupGrid();
+    startScreen = false;
+    playingGame = true;
+  }
   if(selecting){
     selected = true;
     selecting = false;
