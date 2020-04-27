@@ -55,9 +55,8 @@ function draw() {
       movePiece();
     }
     if (enemyTurn){
-      canEnemiesMove();
-      console.log(enemyKillMoves);
-      console.log(enemyMoves);
+      pickEnemyMove();
+      moveEnemy();
     }
   }
 }
@@ -242,29 +241,47 @@ function movePiece(){
   }
 }
 
-function canEnemiesMove(){      // format for possible moves, x, y, xmove, ymove
+function pickEnemyMove(){      // format for possible moves, x, y, xmove, ymove
   for (let i = 0; i < cols; i++){
     for (let j = 0; j < rows; j++){
       if (grid[i][j] === "enemy"){
-        if (grid[i + 1][j + 1] === "empty"){
-          enemyMoves.append([i, j, i + 1, j + 1]);
-        }
-        else if (grid[i + 1][j + 1] === "player"){
-          if (grid[i + 2][j + 2] === "empty"){
-            enemyKillMoves.append([i, j, i + 2, j + 2])
+        if (i !== 7){
+          if (grid[i + 1][j + 1] === "empty"){
+            enemyMoves.push([i, j, i + 1, j + 1]);
+          }
+          if (i !== 6){
+            if (grid[i + 1][j + 1] === "player"){
+              if (grid[i + 2][j + 2] === "empty"){
+                enemyKillMoves.push([i, j, i + 2, j + 2])
+              }
+            }
           }
         }
-        if (grid[i - 1][j + 1] === "empty"){
-          enemyMoves.append([i, j, i - 1, j + 1]);
-        }
-        else if (grid[i - 1][j + 1] === "player"){
-          if (grid[i - 2][j + 2] === "empty"){
-            enemyKillMoves.append([i, j, i - 2, j + 2])
+        if (i !== 0){
+          if (grid[i - 1][j + 1] === "empty"){
+            enemyMoves.push([i, j, i - 1, j + 1]);
+          }
+          if (i !== 1){
+            if (grid[i - 1][j + 1] === "player"){
+              if (grid[i - 2][j + 2] === "empty"){
+                enemyKillMoves.push([i, j, i - 2, j + 2])
+              }
+            }
           }
         }
       }
     }
   }
+  if (enemyKillMoves !== []){
+    enemyChosenMove = random(enemyKillMoves);
+  }
+  else{
+    enemyChosenMove = random(enemyMoves);
+  }
+}
+
+function moveEnemy(){
+  
 }
 
 function mouseClicked(){
