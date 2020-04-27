@@ -241,7 +241,7 @@ function movePiece(){
   }
 }
 
-function pickEnemyMove(){      // format for possible moves, x, y, xmove, ymove
+function pickEnemyMove(){      // format for possible moves, i, j, next i, next j
   for (let i = 0; i < cols; i++){
     for (let j = 0; j < rows; j++){
       if (grid[i][j] === "enemy"){
@@ -281,7 +281,8 @@ function pickEnemyMove(){      // format for possible moves, x, y, xmove, ymove
 }
 
 function moveEnemy(){
-  
+  grid[enemyChosenMove[0]][enemyChosenMove[1]] = "empty";
+  grid[enemyChosenMove[2]][enemyChosenMove[3]] = "enemy";
 }
 
 function mouseClicked(){
