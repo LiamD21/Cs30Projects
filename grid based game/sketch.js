@@ -22,6 +22,10 @@ let canMoveRight = canMoveLeft = canJumpRight = canJumpLeft = false;
 let startScreen = true;
 let playingGame = false;
 let overStartButton;
+let myTurn = enemyTurn = false;
+let enemyMoves = [];
+let enemyKillMoves = [];
+let enemyChosenMove;
 
 function setup() {
   strokeWeight(2);
@@ -45,9 +49,16 @@ function draw() {
   if (playingGame){
     createGrid();
     addCheckers();
-    choosePiece();
-    pickMove();
-    movePiece();
+    if (myTurn){
+      choosePiece();
+      pickMove();
+      movePiece();
+    }
+    if (enemyTurn){
+      canEnemiesMove();
+      console.log(enemyKillMoves);
+      console.log(enemyMoves);
+    }
   }
 }
 
@@ -96,6 +107,11 @@ function setupGrid(){
 }
 
 function createGrid(){
+  stroke("black");
+  strokeWeight(10);
+  rect(width/2, height/2, cellSize*8, cellSize*8);
+  noStroke();
+
   for (let i = 0; i < cols; i++){
     patternCount ++;
     for (let j = 0; j < rows; j++){
@@ -194,12 +210,16 @@ function movePiece(){
       grid[selectingI + 1][selectingJ - 1] = "player";
       moveRight = false;
       selected = false;
+      enemyTurn = true;
+      myTurn = false;
     }
     if(moveLeft && canMoveLeft){
       grid[selectingI][selectingJ] = "empty";
       grid[selectingI - 1][selectingJ - 1] = "player";
       moveLeft = false;
       selected = false;
+      enemyTurn = true;
+      myTurn = false;
     }
     if(jumpRight && canJumpRight){
       grid[selectingI][selectingJ] = "empty";
@@ -207,6 +227,8 @@ function movePiece(){
       grid[selectingI + 1][selectingJ - 1] = "empty";
       jumpRight = false;
       selected = false;
+      enemyTurn = true;
+      myTurn = false;
     }
     if(jumpLeft && canJumpLeft){
       grid[selectingI][selectingJ] = "empty";
@@ -214,6 +236,33 @@ function movePiece(){
       grid[selectingI - 1][selectingJ - 1] = "empty";
       jumpLeft = false;
       selected = false;
+      enemyTurn = true;
+      myTurn = false;
+    }
+  }
+}
+
+function canEnemiesMove(){      // format for possible moves, x, y, xmove, ymove
+  for (let i = 0; i < cols; i++){
+    for (let j = 0; j < rows; j++){
+      if (grid[i][j] === "enemy"){
+        if (grid[i + 1][j + 1] === "empty"){
+          enemyMoves.append([i, j, i + 1, j + 1]);
+        }
+        else if (grid[i + 1][j + 1] === "player"){
+          if (grid[i + 2][j + 2] === "empty"){
+            enemyKillMoves.append([i, j, i + 2, j + 2])
+          }
+        }
+        if (grid[i - 1][j + 1] === "empty"){
+          enemyMoves.append([i, j, i - 1, j + 1]);
+        }
+        else if (grid[i - 1][j + 1] === "player"){
+          if (grid[i - 2][j + 2] === "empty"){
+            enemyKillMoves.append([i, j, i - 2, j + 2])
+          }
+        }
+      }
     }
   }
 }
@@ -223,6 +272,7 @@ function mouseClicked(){
     setupGrid();
     startScreen = false;
     playingGame = true;
+    myTurn = true;
   }
   if(selecting){
     selected = true;
