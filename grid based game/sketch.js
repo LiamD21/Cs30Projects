@@ -26,6 +26,7 @@ let myTurn = enemyTurn = false;
 let enemyMoves = [];
 let enemyKillMoves = [];
 let enemyChosenMove;
+let moveIndex;
 
 function setup() {
   strokeWeight(2);
@@ -56,7 +57,6 @@ function draw() {
     }
     if (enemyTurn){
       pickEnemyMove();
-      moveEnemy();
     }
   }
 }
@@ -273,16 +273,20 @@ function pickEnemyMove(){      // format for possible moves, i, j, next i, next 
     }
   }
   if (enemyKillMoves !== []){
-    enemyChosenMove = random(enemyKillMoves);
+    moveIndex = floor(random(enemyMoves.length))
+    enemyChosenMove = enemyMoves[moveIndex];
   }
   else{
-    enemyChosenMove = random(enemyMoves);
+    moveIndex = floor(random(enemyKillMoves.length))
+    enemyChosenMove = enemyKillMoves[moveIndex];
   }
-}
+  console.log(enemyChosenMove);
 
-function moveEnemy(){
   grid[enemyChosenMove[0]][enemyChosenMove[1]] = "empty";
   grid[enemyChosenMove[2]][enemyChosenMove[3]] = "enemy";
+
+  enemyTurn = false;
+  myTurn = true;
 }
 
 function mouseClicked(){
