@@ -28,6 +28,7 @@ let enemyMoves = [];
 let enemyKillMoves = [];
 let enemyChosenMove;
 let moveIndex;
+let myPieces = enemyPieces = 0;
 
 function setup() {
   strokeWeight(2);
@@ -51,6 +52,7 @@ function draw() {
   if (playingGame){
     createGrid();
     addCheckers();
+    pieceCounter();
     if (myTurn){
       choosePiece();
       pickMove();
@@ -274,9 +276,33 @@ function pickEnemyMove(){      // format for possible moves, i, j, next i, next 
 
   grid[enemyChosenMove[0]][enemyChosenMove[1]] = "empty";
   grid[enemyChosenMove[2]][enemyChosenMove[3]] = "enemy";
-
+  console.log(enemyChosenMove);
+  console.log(grid);
   enemyTurn = false;
   myTurn = true;
+}
+
+function pieceCounter(){
+  enemyPieces = 0;
+  myPieces = 0;
+
+  for (let i = 0; i < 8; i++){
+    for (let j = 0; j< 8; j++){
+      if(grid[i][j] === "player"){
+        myPieces ++;
+      }
+      if(grid[i][j] === "enemy"){
+        enemyPieces ++;
+      }
+    }
+  }
+
+  fill("red");
+  textSize(width/20);
+  text(enemyPieces, width/5, height/4);
+  fill("blue");
+  textSize(width/20);
+  text(myPieces, width*4/5, height*3/4);
 }
 
 function mouseClicked(){
@@ -292,8 +318,8 @@ function mouseClicked(){
   }
 
   if (selected){
-    for (let i = 0; i < 8; i++){
-      for (let j = 0; j< 8; j++){
+    for (let i = 0; i < cols; i++){
+      for (let j = 0; j< rows; j++){
         if (grid[i][j] === "choice"){
           if (collidePointRect(mouseX, mouseY, cellSize * i - cellSize/2 + xOffset, cellSize * j + yOffset - cellSize/2, cellSize, cellSize)){
             moveToI = i;
