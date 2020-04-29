@@ -23,7 +23,6 @@ let selected = false;
 let startScreen = true;
 let playingGame = false;
 let overStartButton;
-let myTurn = enemyTurn = false;
 let enemyMoves = [];
 let enemyKillMoves = [];
 let enemyChosenMove;
@@ -53,14 +52,9 @@ function draw() {
     createGrid();
     addCheckers();
     pieceCounter();
-    if (myTurn){
-      choosePiece();
-      pickMove();
-      movePiece();
-    }
-    if (enemyTurn){
-      pickEnemyMove();
-    }
+    choosePiece();
+    pickMove();
+    movePiece();
   }
 }
 
@@ -229,8 +223,7 @@ function movePiece(){
         }
       }
     }
-    enemyTurn = true;
-    myTurn = false;
+    pickEnemyMove();
   }
 }
 
@@ -242,7 +235,7 @@ function pickEnemyMove(){      // format for possible moves, i, j, next i, next 
           if (grid[i + 1][j + 1] === "empty"){
             enemyMoves.push([i, j, i + 1, j + 1]);
           }
-          if (i !== 6){
+          else if (i !== 6){
             if (grid[i + 1][j + 1] === "player"){
               if (grid[i + 2][j + 2] === "empty"){
                 enemyKillMoves.push([i, j, i + 2, j + 2])
@@ -254,7 +247,7 @@ function pickEnemyMove(){      // format for possible moves, i, j, next i, next 
           if (grid[i - 1][j + 1] === "empty"){
             enemyMoves.push([i, j, i - 1, j + 1]);
           }
-          if (i !== 1){
+          else if (i !== 1){
             if (grid[i - 1][j + 1] === "player"){
               if (grid[i - 2][j + 2] === "empty"){
                 enemyKillMoves.push([i, j, i - 2, j + 2])
