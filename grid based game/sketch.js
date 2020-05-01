@@ -53,8 +53,6 @@ function draw() {
     addCheckers();
     pieceCounter();
     choosePiece();
-    pickMove();
-    movePiece();
   }
 }
 
@@ -171,39 +169,31 @@ function choosePiece(){
 }
 
 function pickMove(){
-  if (selected){
-    stroke("yellow");
-    fill("blue");
-    ellipse(cellSize * selectingI + xOffset, cellSize * selectingJ +yOffset, cellSize * 7/8, cellSize * 5/6);
+  stroke("yellow");
+  fill("blue");
+  ellipse(cellSize * selectingI + xOffset, cellSize * selectingJ +yOffset, cellSize * 7/8, cellSize * 5/6);
 
-    if (selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "empty"){
-      grid[selectingI - 1][selectingJ - 1] = "choice";
+  if (selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "empty"){
+    grid[selectingI - 1][selectingJ - 1] = "choice";
+  }
+  if (selectingI !==7 && grid[selectingI + 1][selectingJ - 1] === "empty"){
+    grid[selectingI + 1][selectingJ - 1] = "choice";
+  }
+  if( selectingI !== 6 && selectingI !== 7 && grid[selectingI + 1][selectingJ - 1] === "enemy" ){
+    if(grid[selectingI + 2][selectingJ - 2] === "empty"){
+      grid[selectingI + 2][selectingJ - 2] = "choice";
     }
-    if (selectingI !==7 && grid[selectingI + 1][selectingJ - 1] === "empty"){
-      grid[selectingI + 1][selectingJ - 1] = "choice";
+  }
+  if(selectingI !== 1 && selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "enemy" ){
+    if(grid[selectingI - 2][selectingJ - 2] === "empty"){
+      grid[selectingI - 2][selectingJ - 2] = "choice";
     }
-    if( selectingI !== 6 && selectingI !== 7 && grid[selectingI + 1][selectingJ - 1] === "enemy" ){
-      if(grid[selectingI + 2][selectingJ - 2] === "empty"){
-        grid[selectingI + 2][selectingJ - 2] = "choice";
-      }
-    }
-    if(selectingI !== 1 && selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "enemy" ){
-      if(grid[selectingI - 2][selectingJ - 2] === "empty"){
-        grid[selectingI - 2][selectingJ - 2] = "choice";
-      }
-    }
+  }
     noStroke();
-  }
-  if(!selected){
-    canJumpRight = false;
-    canJumpLeft = false;
-    canMoveLeft = false;
-    canMoveRight = false;
-  }
 }
 
 function movePiece(){
-  if (selected && move){
+  if (selected &&    move){
     grid[moveToI][moveToJ] = "player";
     grid[selectingI][selectingJ] = "empty";
     if (selectingJ - moveToJ === 2){
@@ -227,52 +217,45 @@ function movePiece(){
   }
 }
 
-function pickEnemyMove(){      // format for possible moves, i, j, next i, next j
+function pickEnemyMove(){      // format for possible moves, i, j, L or R for left or right
   for (let i = 0; i < cols; i++){
     for (let j = 0; j < rows; j++){
       if (grid[i][j] === "enemy"){
-        if (i !== 7){
+
+        if (i < 7){
           if (grid[i + 1][j + 1] === "empty"){
-            enemyMoves.push([i, j, i + 1, j + 1]);
-          }
-          else if (i !== 6){
-            if (grid[i + 1][j + 1] === "player"){
-              if (grid[i + 2][j + 2] === "empty"){
-                enemyKillMoves.push([i, j, i + 2, j + 2])
-              }
-            }
+            let move = {
+              enemyI: i,
+              enemyJ: j,
+              side: "R"
+            };
+            enemyMoves.push(move);
           }
         }
-        if (i !== 0){
+        if (i > 0){
           if (grid[i - 1][j + 1] === "empty"){
-            enemyMoves.push([i, j, i - 1, j + 1]);
-          }
-          else if (i !== 1){
-            if (grid[i - 1][j + 1] === "player"){
-              if (grid[i - 2][j + 2] === "empty"){
-                enemyKillMoves.push([i, j, i - 2, j + 2])
-              }
-            }
+            let move = {
+              enemyI: i,
+              enemyJ: j,
+              side: "R"
+            };
+            enemyMoves.push(move);
           }
         }
       }
     }
   }
-  if (enemyKillMoves !== []){
-    moveIndex = floor(random(enemyMoves.length))
-    enemyChosenMove = enemyMoves[moveIndex];
-  }
-  else{
-    moveIndex = floor(random(enemyKillMoves.length))
-    enemyChosenMove = enemyKillMoves[moveIndex];
-  }
+  moveIndex = random(enemyMoves.length);
+  moveIndex = floor(moveIndex);
+  enemyChosenMove = enemyMoves[moveIndex];
 
-  grid[enemyChosenMove[0]][enemyChosenMove[1]] = "empty";
-  grid[enemyChosenMove[2]][enemyChosenMove[3]] = "enemy";
-  console.log(enemyChosenMove);
-  console.log(grid);
-  enemyTurn = false;
-  myTurn = true;
+  grid[enemyChosenMove.enemyI][enemyChosenMove.enemyJ] = "empty";
+  if (enemyChosenMove.side === "R"){
+    grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "enemy";
+  }
+  if (enemyChosenMove.side === "L"){
+    grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "enemy";
+  }
 }
 
 function pieceCounter(){
@@ -292,10 +275,10 @@ function pieceCounter(){
 
   fill("red");
   textSize(width/20);
-  text(enemyPieces, width/5, height/4);
+  text(enemyPieces, width/6, height/4);
   fill("blue");
   textSize(width/20);
-  text(myPieces, width*4/5, height*3/4);
+  text(myPieces, width*5/6, height*3/4);
 }
 
 function mouseClicked(){
@@ -322,6 +305,11 @@ function mouseClicked(){
         }
       }
     }
+  }
+
+  if(playingGame && selected){
+    pickMove();
+    movePiece();
   }
 }
 
