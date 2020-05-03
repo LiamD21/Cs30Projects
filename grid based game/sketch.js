@@ -25,6 +25,7 @@ let playingGame = false;
 let overStartButton;
 let enemyMoves = [];
 let enemyKillMoves = [];
+let enemies = [];
 let enemyChosenMove;
 let moveIndex;
 let myPieces = enemyPieces = 0;
@@ -227,7 +228,8 @@ function pickEnemyMove(){      // format for possible moves, i, j, L or R for le
             let move = {
               enemyI: i,
               enemyJ: j,
-              side: "R"
+              side: "R",
+              jump: false
             };
             enemyMoves.push(move);
           }
@@ -237,25 +239,75 @@ function pickEnemyMove(){      // format for possible moves, i, j, L or R for le
             let move = {
               enemyI: i,
               enemyJ: j,
-              side: "R"
+              side: "L",
+              jump: false
             };
             enemyMoves.push(move);
+          }
+        }
+        if (i < 6){
+          if (grid[i + 1][j + 1] === "player"){
+            if(grid[i + 2][j + 2] === "empty"){
+              let move = {
+                enemyI: i,
+                enemyJ: j,
+                side: "R",
+                jump: true
+              };
+              enemyKillMoves.push(move);
+            }
+          }
+          if (i > 1){
+            if (grid[i - 1][j + 1] === "player"){
+              if(grid[i - 2][j + 2] === "empty"){
+                let move = {
+                  enemyI: i,
+                  enemyJ: j,
+                  side: "L",
+                  jump: true
+                };
+                enemyKillMoves.push(move);
+              }
+            }
           }
         }
       }
     }
   }
-  moveIndex = random(enemyMoves.length);
-  moveIndex = floor(moveIndex);
-  enemyChosenMove = enemyMoves[moveIndex];
+  if (enemyKillMoves.length === 0){
+    moveIndex = random(enemyMoves.length);
+    moveIndex = floor(moveIndex);
+    enemyChosenMove = enemyMoves[moveIndex];
+  }
+  if (enemyKillMoves.length > 0) {
+    moveIndex = random(enemyKillMoves.length);
+    moveIndex = floor(moveIndex);
+    enemyChosenMove = enemyKillMoves[moveIndex];
+  }
 
   grid[enemyChosenMove.enemyI][enemyChosenMove.enemyJ] = "empty";
-  if (enemyChosenMove.side === "R"){
-    grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "enemy";
+  if (enemyChosenMove.jump){
+    if (enemyChosenMove.side === "R"){
+      grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "empty";
+      grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
+
+    }
+    if (enemyChosenMove.side === "L"){
+      grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "empty";
+      grid[enemyChosenMove.enemyI - 2][enemyChosenMove.enemyJ + 2] = "enemy";
+    }
   }
-  if (enemyChosenMove.side === "L"){
-    grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "enemy";
+
+  if (!enemyChosenMove.jump){
+    if (enemyChosenMove.side === "R"){
+      grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "enemy";
+    }
+    if (enemyChosenMove.side === "L"){
+      grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "enemy";
+    }
   }
+  enemyMoves = [];
+  enemyKillMoves = [];
 }
 
 function pieceCounter(){
