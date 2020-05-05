@@ -32,6 +32,7 @@ let myPieces = enemyPieces = 0;
 let youWin = youLose = false;
 let gameOverScreen = false;
 let overRestartButton;
+let enemyTurnTimer;
 
 function setup() {
   strokeWeight(2);
@@ -160,11 +161,11 @@ function addCheckers(){
     for (let j = 0; j < rows; j++){
       if(grid[i][j] === "enemy"){
         fill("red");
-        ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8, cellSize * 5/6);
+        ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8);
       }
       if (grid[i][j] === "player"){
         fill("blue");
-        ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8, cellSize * 5/6);
+        ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8);
       }
       if (grid[i][j] === "choice"){
         fill("black");
@@ -172,6 +173,12 @@ function addCheckers(){
         strokeWeight(8);
         rect(cellSize * i + xOffset, cellSize * j + yOffset, cellSize, cellSize);
         noStroke();
+      }
+      if (grid[i][j] === "playerKing"){
+        fill("blue");
+        ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8);
+        fill("yellow")
+        ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize/3);
       }
     }
   }
@@ -181,17 +188,19 @@ function choosePiece(){
   for (let i = 0; i < cols; i++){
     for (let j = 0; j < rows; j++){
       if (collidePointRect(mouseX, mouseY, cellSize * i + xOffset - cellSize/2, cellSize * j + yOffset - cellSize/2, cellSize, cellSize)){
-        if (grid[i][j] === "player" && !selected){
-          strokeWeight(8);
-          stroke("yellow");
-          fill("blue");
-          selecting = true;
-          selectingI = i;
-          selectingJ = j;
-          ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8, cellSize * 5/6);
-        }
-        else{
-          selecting = false;
+        if (!selected){
+          if (grid[i][j] === "player" || grid[i][j] === "playerKing"){
+            strokeWeight(8);
+            stroke("yellow");
+            fill(255, 255, 255, 0);
+            selecting = true;
+            selectingI = i;
+            selectingJ = j;
+            ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8);
+          }
+          else{
+            selecting = false;
+          }
         }
       }
       noStroke();
@@ -224,7 +233,7 @@ function pickMove(){
 }
 
 function movePiece(){
-  if (selected &&    move){
+  if (selected && move){
     grid[moveToI][moveToJ] = "player";
     grid[selectingI][selectingJ] = "empty";
     if (selectingJ - moveToJ === 2){
@@ -244,7 +253,17 @@ function movePiece(){
         }
       }
     }
+    enemyTurnTimer = millis();
+    enemyTurnWait();
+  }
+}
+
+function enemyTurnWait(){
+  if (enemyTurnTimer + 1000 <= millis()){
     pickEnemyMove();
+  }
+  if (enemyTurnTimer + 1000 > millis()){
+    enemyTurnWait();
   }
 }
 
@@ -344,7 +363,7 @@ function makeKings(){
   for (let i = 0; i < cols; i++){
     let j = 0;
     if (grid[i][j] === "player"){
-      
+      grid[i][j] = "playerKing";
     }
   }
 }
