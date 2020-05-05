@@ -29,6 +29,9 @@ let enemies = [];
 let enemyChosenMove;
 let moveIndex;
 let myPieces = enemyPieces = 0;
+let youWin = youLose = false;
+let gameOverScreen = false;
+let overRestartButton;
 
 function setup() {
   strokeWeight(2);
@@ -54,6 +57,10 @@ function draw() {
     addCheckers();
     pieceCounter();
     choosePiece();
+    makeKings();
+  }
+  if (gameOverScreen){
+    drawGameOver();
   }
 }
 
@@ -78,6 +85,29 @@ function drawStartScreen(){
   fill("black");
   textSize(width/25);
   text("START", width/2, height*11/16);
+}
+
+function drawGameOver(){
+  textSize(width/8);
+  fill("blue");
+  text("Checkers", width/2, height *2/5);
+
+  overRestartButton = collidePointRect(mouseX, mouseY,width/2 - width/14, height*2/3 - height/20, width/7, height/10);
+
+  stroke("black");
+  strokeWeight(6);
+
+  if (!overRestartButton){
+    fill("white");
+  }
+  else{
+    fill("grey");
+  }
+  rect(width/2, height*2/3, width/7, height/10);
+  noStroke();
+  fill("black");
+  textSize(width/25);
+  text("RESTART", width/2, height*11/16);
 }
 
 function setupGrid(){
@@ -310,6 +340,15 @@ function pickEnemyMove(){      // format for possible moves, i, j, L or R for le
   enemyKillMoves = [];
 }
 
+function makeKings(){
+  for (let i = 0; i < cols; i++){
+    let j = 0;
+    if (grid[i][j] === "player"){
+      
+    }
+  }
+}
+
 function pieceCounter(){
   enemyPieces = 0;
   myPieces = 0;
@@ -331,6 +370,15 @@ function pieceCounter(){
   fill("blue");
   textSize(width/20);
   text(myPieces, width*5/6, height*3/4);
+
+  if (myPieces === 0){
+    gameOverScreen = true;
+    youLose = true;
+  }
+  if (enemyPieces === 0){
+    gameOverScreen = true;
+    youWin = true;
+  }
 }
 
 function mouseClicked(){
@@ -338,7 +386,13 @@ function mouseClicked(){
     setupGrid();
     startScreen = false;
     playingGame = true;
-    myTurn = true;
+  }
+  if (gameOverScreen && overRestartButton){
+    gameOverScreen = false;
+    youWin = false;
+    youLose = false;
+    playingGame = true;
+    setupGrid();
   }
   if(selecting){
     selected = true;
