@@ -34,6 +34,7 @@ let gameOverScreen = false;
 let overRestartButton;
 let enemyTurnTimer;
 let myTurn = enemyTurn = false;
+let king = false;
 
 function setup() {
   strokeWeight(2);
@@ -173,7 +174,7 @@ function addCheckers(){
         fill("blue");
         ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8);
       }
-      if (grid[i][j] === "choice"){
+      if (grid[i][j] === "choice" || grid[i][j] === "choiceKing"){
         fill("black");
         stroke("yellow");
         strokeWeight(8);
@@ -219,20 +220,58 @@ function pickMove(){
   fill("blue");
   ellipse(cellSize * selectingI + xOffset, cellSize * selectingJ +yOffset, cellSize * 7/8, cellSize * 5/6);
 
-  if (selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "empty"){
-    grid[selectingI - 1][selectingJ - 1] = "choice";
-  }
-  if (selectingI !==7 && grid[selectingI + 1][selectingJ - 1] === "empty"){
-    grid[selectingI + 1][selectingJ - 1] = "choice";
-  }
-  if( selectingI !== 6 && selectingI !== 7 && grid[selectingI + 1][selectingJ - 1] === "enemy" ){
-    if(grid[selectingI + 2][selectingJ - 2] === "empty"){
-      grid[selectingI + 2][selectingJ - 2] = "choice";
+  if (grid[selectingI][selectingJ] === "player"){ // NON KINGS
+    if (selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "empty"){ //left
+      grid[selectingI - 1][selectingJ - 1] = "choice";
+    }
+    if (selectingI !==7 && grid[selectingI + 1][selectingJ - 1] === "empty"){ //right
+      grid[selectingI + 1][selectingJ - 1] = "choice";
+    }
+    if( selectingI !== 6 && selectingI !== 7 && grid[selectingI + 1][selectingJ - 1] === "enemy" ){ // jump right
+      if(grid[selectingI + 2][selectingJ - 2] === "empty"){
+        grid[selectingI + 2][selectingJ - 2] = "choice";
+      }
+    }
+    if(selectingI !== 1 && selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "enemy" ){ // jump left
+      if(grid[selectingI - 2][selectingJ - 2] === "empty"){
+        grid[selectingI - 2][selectingJ - 2] = "choice";
+      }
     }
   }
-  if(selectingI !== 1 && selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "enemy" ){
-    if(grid[selectingI - 2][selectingJ - 2] === "empty"){
-      grid[selectingI - 2][selectingJ - 2] = "choice";
+
+  if (grid[selectingI][selectingJ] === "playerKing"){  // KINGS backwards
+    if (selectingI !== 0 && grid[selectingI - 1][selectingJ + 1] === "empty"){
+      grid[selectingI - 1][selectingJ + 1] = "choiceKing";
+    }
+    if (selectingI !==7 && grid[selectingI + 1][selectingJ + 1] === "empty"){
+      grid[selectingI + 1][selectingJ + 1] = "choiceKing";
+    }
+    if( selectingI !== 6 && selectingI !== 7 && grid[selectingI + 1][selectingJ + 1] === "enemy" ){
+      if(grid[selectingI + 2][selectingJ + 2] === "empty"){
+        grid[selectingI + 2][selectingJ + 2] = "choiceKing";
+      }
+    }
+    if(selectingI !== 1 && selectingI !== 0 && grid[selectingI - 1][selectingJ + 1] === "enemy" ){
+      if(grid[selectingI - 2][selectingJ + 2] === "empty"){
+        grid[selectingI - 2][selectingJ + 2] = "choiceKing";
+      }
+    }
+            // KINGS forward
+    if (selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "empty"){
+      grid[selectingI - 1][selectingJ - 1] = "choiceKing";
+    }
+    if (selectingI !==7 && grid[selectingI + 1][selectingJ - 1] === "empty"){
+      grid[selectingI + 1][selectingJ - 1] = "choiceKing";
+    }
+    if( selectingI !== 6 && selectingI !== 7 && grid[selectingI + 1][selectingJ - 1] === "enemy" ){
+      if(grid[selectingI + 2][selectingJ - 2] === "empty"){
+        grid[selectingI + 2][selectingJ - 2] = "choiceKing";
+      }
+    }
+    if(selectingI !== 1 && selectingI !== 0 && grid[selectingI - 1][selectingJ - 1] === "enemy" ){
+      if(grid[selectingI - 2][selectingJ - 2] === "empty"){
+        grid[selectingI - 2][selectingJ - 2] = "choiceKing";
+      }
     }
   }
     noStroke();
@@ -240,9 +279,15 @@ function pickMove(){
 
 function movePiece(){
   if (selected && move){
-    grid[moveToI][moveToJ] = "player";
+    if (!king){
+      grid[moveToI][moveToJ] = "player";
+    }
+    if (king){
+      grid[moveToI][moveToJ] = "playerKing";
+    }
     grid[selectingI][selectingJ] = "empty";
-    if (selectingJ - moveToJ === 2){
+
+    if (selectingJ - moveToJ === 2 && !king){
       if (selectingI - moveToI > 0){ // jumping left
         grid[selectingI - 1][selectingJ - 1] = "empty";
       }
@@ -250,11 +295,30 @@ function movePiece(){
         grid[selectingI + 1][selectingJ - 1] = "empty";
       }
     }
+
+    if (selectingJ - moveToJ === 2 && king){
+      if (selectingI - moveToI > 0){ // jumping left
+        grid[selectingI - 1][selectingJ - 1] = "empty";
+      }
+      if (selectingI - moveToI < 0){ // jumping right
+        grid[selectingI + 1][selectingJ - 1] = "empty";
+      }
+    }
+
+    if (moveToJ - selectingJ === 2 && king){
+      if (selectingI - moveToI > 0){ // jumping left back
+        grid[selectingI - 1][selectingJ + 1] = "empty";
+      }
+      if (selectingI - moveToI < 0){ // jumping right back
+        grid[selectingI + 1][selectingJ + 1] = "empty";
+      }
+      
+    }
     move = false;
     selected = false;
     for (let i = 0; i < cols; i++){
       for (let j = 0; j < rows; j++){
-        if (grid[i][j] === "choice"){
+        if (grid[i][j] === "choice" || grid[i][j] === "choiceKing"){
           grid[i][j] = "empty";
         }
       }
@@ -432,6 +496,15 @@ function mouseClicked(){
             moveToI = i;
             moveToJ = j;
             move = true;
+            king = false;
+          }
+        }
+        if (grid[i][j] === "choiceKing"){
+          if (collidePointRect(mouseX, mouseY, cellSize * i - cellSize/2 + xOffset, cellSize * j + yOffset - cellSize/2, cellSize, cellSize)){
+            moveToI = i;
+            moveToJ = j;
+            move = true;
+            king = true;
           }
         }
       }
