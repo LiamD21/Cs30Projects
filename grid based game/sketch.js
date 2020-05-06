@@ -33,6 +33,7 @@ let youWin = youLose = false;
 let gameOverScreen = false;
 let overRestartButton;
 let enemyTurnTimer;
+let myTurn = enemyTurn = false;
 
 function setup() {
   strokeWeight(2);
@@ -57,8 +58,13 @@ function draw() {
     createGrid();
     addCheckers();
     pieceCounter();
-    choosePiece();
     makeKings();
+    if (myTurn){
+      choosePiece();
+    }
+    if (enemyTurn){
+      pickEnemyMove();
+    }
   }
   if (gameOverScreen){
     drawGameOver();
@@ -253,110 +259,106 @@ function movePiece(){
         }
       }
     }
+    enemyTurn = true;
+    myTurn = false;
     enemyTurnTimer = millis();
-    enemyTurnWait();
   }
 }
 
-function enemyTurnWait(){
-  if (enemyTurnTimer + 1000 <= millis()){
-    pickEnemyMove();
-  }
-  if (enemyTurnTimer + 1000 > millis()){
-    enemyTurnWait();
-  }
-}
+function pickEnemyMove(){     // format for possible moves, i, j, L or R for left or right
+  if (enemyTurnTimer + 500 < millis()){
+    for (let i = 0; i < cols; i++){
+      for (let j = 0; j < rows; j++){
+        if (grid[i][j] === "enemy"){
 
-function pickEnemyMove(){      // format for possible moves, i, j, L or R for left or right
-  for (let i = 0; i < cols; i++){
-    for (let j = 0; j < rows; j++){
-      if (grid[i][j] === "enemy"){
-
-        if (i < 7){
-          if (grid[i + 1][j + 1] === "empty"){
-            let move = {
-              enemyI: i,
-              enemyJ: j,
-              side: "R",
-              jump: false
-            };
-            enemyMoves.push(move);
-          }
-        }
-        if (i > 0){
-          if (grid[i - 1][j + 1] === "empty"){
-            let move = {
-              enemyI: i,
-              enemyJ: j,
-              side: "L",
-              jump: false
-            };
-            enemyMoves.push(move);
-          }
-        }
-        if (i < 6){
-          if (grid[i + 1][j + 1] === "player"){
-            if(grid[i + 2][j + 2] === "empty"){
+          if (i < 7){
+            if (grid[i + 1][j + 1] === "empty"){
               let move = {
                 enemyI: i,
                 enemyJ: j,
                 side: "R",
-                jump: true
+                jump: false
               };
-              enemyKillMoves.push(move);
+              enemyMoves.push(move);
             }
           }
-          if (i > 1){
-            if (grid[i - 1][j + 1] === "player"){
-              if(grid[i - 2][j + 2] === "empty"){
+          if (i > 0){
+            if (grid[i - 1][j + 1] === "empty"){
+              let move = {
+                enemyI: i,
+                enemyJ: j,
+                side: "L",
+                jump: false
+              };
+              enemyMoves.push(move);
+            }
+          }
+          if (i < 6){
+            if (grid[i + 1][j + 1] === "player"){
+              if(grid[i + 2][j + 2] === "empty"){
                 let move = {
                   enemyI: i,
                   enemyJ: j,
-                  side: "L",
+                  side: "R",
                   jump: true
                 };
                 enemyKillMoves.push(move);
+              }
+            }
+            if (i > 1){
+              if (grid[i - 1][j + 1] === "player"){
+                if(grid[i - 2][j + 2] === "empty"){
+                  let move = {
+                    enemyI: i,
+                    enemyJ: j,
+                    side: "L",
+                    jump: true
+                  };
+                  enemyKillMoves.push(move);
+                }
               }
             }
           }
         }
       }
     }
-  }
-  if (enemyKillMoves.length === 0){
-    moveIndex = random(enemyMoves.length);
-    moveIndex = floor(moveIndex);
-    enemyChosenMove = enemyMoves[moveIndex];
-  }
-  if (enemyKillMoves.length > 0) {
-    moveIndex = random(enemyKillMoves.length);
-    moveIndex = floor(moveIndex);
-    enemyChosenMove = enemyKillMoves[moveIndex];
-  }
+    if (enemyKillMoves.length === 0){
+      moveIndex = random(enemyMoves.length);
+      moveIndex = floor(moveIndex);
+      enemyChosenMove = enemyMoves[moveIndex];
+    }
+    if (enemyKillMoves.length > 0) {
+      moveIndex = random(enemyKillMoves.length);
+      moveIndex = floor(moveIndex);
+      enemyChosenMove = enemyKillMoves[moveIndex];
+    }
 
-  grid[enemyChosenMove.enemyI][enemyChosenMove.enemyJ] = "empty";
-  if (enemyChosenMove.jump){
-    if (enemyChosenMove.side === "R"){
-      grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "empty";
-      grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
+    grid[enemyChosenMove.enemyI][enemyChosenMove.enemyJ] = "empty";
+    if (enemyChosenMove.jump){
+      if (enemyChosenMove.side === "R"){
+        grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "empty";
+        grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
 
+      }
+      if (enemyChosenMove.side === "L"){
+        grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "empty";
+        grid[enemyChosenMove.enemyI - 2][enemyChosenMove.enemyJ + 2] = "enemy";
+      }
     }
-    if (enemyChosenMove.side === "L"){
-      grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "empty";
-      grid[enemyChosenMove.enemyI - 2][enemyChosenMove.enemyJ + 2] = "enemy";
-    }
-  }
 
-  if (!enemyChosenMove.jump){
-    if (enemyChosenMove.side === "R"){
-      grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "enemy";
+    if (!enemyChosenMove.jump){
+      if (enemyChosenMove.side === "R"){
+        grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "enemy";
+      }
+      if (enemyChosenMove.side === "L"){
+        grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "enemy";
+      }
     }
-    if (enemyChosenMove.side === "L"){
-      grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "enemy";
-    }
+    enemyMoves = [];
+    enemyKillMoves = [];
+    enemyTurn = false;
+    myTurn = true;
   }
-  enemyMoves = [];
-  enemyKillMoves = [];
 }
 
 function makeKings(){
@@ -405,12 +407,16 @@ function mouseClicked(){
     setupGrid();
     startScreen = false;
     playingGame = true;
+    myTurn = true;
+    enemyTurn = false;
   }
   if (gameOverScreen && overRestartButton){
     gameOverScreen = false;
     youWin = false;
     youLose = false;
     playingGame = true;
+    myTurn = true;
+    enemyTurn = false;
     setupGrid();
   }
   if(selecting){
