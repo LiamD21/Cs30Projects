@@ -187,6 +187,12 @@ function addCheckers(){
         fill("yellow")
         ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize/3);
       }
+      if (grid[i][j] === "enemyKing"){
+        fill("red");
+        ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8);
+        fill("yellow")
+        ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize/3);
+      }
     }
   }
 }
@@ -333,16 +339,21 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
   if (enemyTurnTimer + 500 < millis()){
     for (let i = 0; i < cols; i++){
       for (let j = 0; j < rows; j++){
-        if (grid[i][j] === "enemy"){
+        if (grid[i][j] === "enemy" || grid[i][j] === "enemyKing"){
 
-          if (i < 7){
+          if (i < 7){ // all forwards enemy moves
             if (grid[i + 1][j + 1] === "empty"){
               let move = {
                 enemyI: i,
                 enemyJ: j,
                 side: "R",
-                jump: false
+                jump: false,
+                king: false,
+                back: false
               };
+              if (grid[i][j] === "enemyKing"){
+                move.king = true;
+              }
               enemyMoves.push(move);
             }
           }
@@ -352,8 +363,13 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
                 enemyI: i,
                 enemyJ: j,
                 side: "L",
-                jump: false
+                jump: false,
+                king: false,
+                back: false
               };
+              if (grid[i][j] === "enemyKing"){
+                move.king = true;
+              }
               enemyMoves.push(move);
             }
           }
@@ -364,19 +380,89 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
                   enemyI: i,
                   enemyJ: j,
                   side: "R",
-                  jump: true
+                  jump: true,
+                  king: false,
+                  back: false
                 };
+                if (grid[i][j] === "enemyKing"){
+                  move.king = true;
+                }
                 enemyKillMoves.push(move);
               }
             }
+          }
+          if (i > 1){
+            if (grid[i - 1][j + 1] === "player"){
+              if(grid[i - 2][j + 2] === "empty"){
+                let move = {
+                  enemyI: i,
+                  enemyJ: j,
+                  side: "L",
+                  jump: true,
+                  king: false,
+                  back: false
+                };
+                if (grid[i][j] === "enemyKing"){
+                  move.king = true;
+                }
+                enemyKillMoves.push(move);
+              }
+            }
+          }
+
+
+          if (grid[i][j] === "enemyKing"){
+            if (i < 7){ // all backwards enemy moves for kings
+              if (grid[i + 1][j - 1] === "empty"){
+                let move = {
+                  enemyI: i,
+                  enemyJ: j,
+                  side: "R",
+                  jump: false,
+                  king: true,
+                  back: true
+                };
+                enemyMoves.push(move);
+              }
+            }
+            if (i > 0){
+              if (grid[i - 1][j - 1] === "empty"){
+                let move = {
+                  enemyI: i,
+                  enemyJ: j,
+                  side: "L",
+                  jump: false,
+                  king: true,
+                  back: true
+                };
+                enemyMoves.push(move);
+              }
+            }
+            if (i < 6){
+              if (grid[i + 1][j - 1] === "player"){
+                if(grid[i + 2][j - 2] === "empty"){
+                  let move = {
+                    enemyI: i,
+                    enemyJ: j,
+                    side: "R",
+                    jump: true,
+                    king: true,
+                    back: true
+                  };
+                  enemyKillMoves.push(move);
+                }
+              }
+            }
             if (i > 1){
-              if (grid[i - 1][j + 1] === "player"){
-                if(grid[i - 2][j + 2] === "empty"){
+              if (grid[i - 1][j - 1] === "player"){
+                if(grid[i - 2][j - 2] === "empty"){
                   let move = {
                     enemyI: i,
                     enemyJ: j,
                     side: "L",
-                    jump: true
+                    jump: true,
+                    king: true,
+                    back: true
                   };
                   enemyKillMoves.push(move);
                 }
@@ -398,24 +484,44 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
     }
 
     grid[enemyChosenMove.enemyI][enemyChosenMove.enemyJ] = "empty";
-    if (enemyChosenMove.jump){
+    if (enemyChosenMove.jump){ // jumping moves
       if (enemyChosenMove.side === "R"){
         grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "empty";
-        grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
+        if (enemyChosenMove.king){
+          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemyKing";
+        }
+        if (!enemyChosenMove.king){
+          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
+        }
 
       }
       if (enemyChosenMove.side === "L"){
         grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "empty";
-        grid[enemyChosenMove.enemyI - 2][enemyChosenMove.enemyJ + 2] = "enemy";
+        if (enemyChosenMove.king){
+          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemyKing";
+        }
+        if (!enemyChosenMove.king){
+          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
+        }
       }
     }
 
-    if (!enemyChosenMove.jump){
+    if (!enemyChosenMove.jump){ // non jumping moves
       if (enemyChosenMove.side === "R"){
-        grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "enemy";
+        if (enemyChosenMove.king){
+          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemyKing";
+        }
+        if (!enemyChosenMove.king){
+          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
+        }
       }
       if (enemyChosenMove.side === "L"){
-        grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "enemy";
+        if (enemyChosenMove.king){
+          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemyKing";
+        }
+        if (!enemyChosenMove.king){
+          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
+        }
       }
     }
     enemyMoves = [];
@@ -430,6 +536,12 @@ function makeKings(){
     let j = 0;
     if (grid[i][j] === "player"){
       grid[i][j] = "playerKing";
+    }
+  }
+  for (let i = 0; i < cols; i++){
+    let j = 7;
+    if (grid[i][j] === "enemy"){
+      grid[i][j] === "enemyKing";
     }
   }
 }
