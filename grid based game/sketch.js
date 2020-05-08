@@ -707,12 +707,12 @@ function mouseClicked(){
       playingGame = true;
     }
     if (overMediumButton){
-      difficultyConstant = 8;
+      difficultyConstant = 7;
       modeSelectScreen = false;
       playingGame = true;
     }
     if (overEasyButton){
-      difficultyConstant = 6;
+      difficultyConstant = 5;
       modeSelectScreen = false;
       playingGame = true;
     }
