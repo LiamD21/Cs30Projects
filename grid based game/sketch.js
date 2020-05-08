@@ -39,6 +39,8 @@ let modeSelectScreen = false;
 let easy = medium = hard = false;
 let overEasyButton = overMediumButton = overHardButton = false;
 let difficultyConstant;
+let instructions = false;
+let overStartButtonInst = false;
 
 function setup() {
   strokeWeight(2);
@@ -61,6 +63,9 @@ function draw() {
   }
   if (modeSelectScreen){
     gameModeButtons();
+  }
+  if (instructions){
+    drawInstructions();
   }
   if (playingGame){
     createGrid();
@@ -149,6 +154,35 @@ function gameModeButtons(){
   text("MEDIUM", width/2, height*11/16);
   text("EASY", width/2, height*15/19);
 
+}
+
+function drawInstructions(){
+  textSize(width/40);
+  text("Click on your piece to select it, your possible moves will be highlighted", width/2, height/20);
+  text("Then click on where you want to go", width/2, height*2/20);
+  text("To unselect a piece, press space", width/2, height*3/20);
+  text("The numbers on the left shows remaining pieces", width/2, height*4/20);
+  text("You can jump over enemies to eliminate their piece, there is no double jumping", width/2, height*5/20);
+  text("Reaching the opposite end turns your piece into a king, marked by a yellow dot", width/2, height*6/20);
+  text("Kings can also move backwards", width/2, height*7/20);
+  text("The token on the right shows whose turn it is", width/2, height*8/20);
+
+  overStartButtonInst = collidePointRect(mouseX, mouseY,width/2 - width/14, height*2/3 - height/20, width/7, height/10);
+
+  stroke("black");
+  strokeWeight(6);
+
+  if (!overStartButtonInst){
+    fill("white");
+  }
+  else{
+    fill("grey");
+  }
+  rect(width/2, height*2/3, width/7, height/10);
+  noStroke();
+  fill("black");
+  textSize(width/25);
+  text("START", width/2, height*11/16);
 }
 
 function drawGameOver(){
@@ -560,7 +594,6 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
       moveIndex = floor(moveIndex);
       enemyChosenMove = enemyMoves[moveIndex];
     }
-    console.log(enemyChosenMove);
 
     grid[enemyChosenMove.enemyI][enemyChosenMove.enemyJ] = "empty";
     if (!enemyChosenMove.back){ // forwards moves
@@ -704,24 +737,30 @@ function mouseClicked(){
     if (overHardButton){
       difficultyConstant = 10;
       modeSelectScreen = false;
-      playingGame = true;
+      instructions = true;
     }
     if (overMediumButton){
       difficultyConstant = 7;
       modeSelectScreen = false;
-      playingGame = true;
+      instructions = true;
     }
     if (overEasyButton){
       difficultyConstant = 5;
       modeSelectScreen = false;
-      playingGame = true;
+      instructions = true;
     }
   }
+
+  if (instructions && overStartButtonInst){
+    instructions = false;
+    playingGame = true;
+  }
+
   if (gameOverScreen && overRestartButton){
     gameOverScreen = false;
     youWin = false;
     youLose = false;
-    playingGame = true;
+    modeSelectScreen = true;
     myTurn = true;
     enemyTurn = false;
     setupGrid();
