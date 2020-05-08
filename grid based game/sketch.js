@@ -98,9 +98,14 @@ function drawStartScreen(){
 function drawGameOver(){
   textSize(width/8);
   fill("blue");
-  text("Checkers", width/2, height *2/5);
+  if (youLose){
+    text("YOU LOSE", width/2, height *2/5);
+  }
+  if (youWin){
+    text("YOU WIN", width/2, height *2/5);
+  }
 
-  overRestartButton = collidePointRect(mouseX, mouseY,width/2 - width/14, height*2/3 - height/20, width/7, height/10);
+  overRestartButton = collidePointRect(mouseX, mouseY,width/2 - width/12, height*2/3 - height/18, width/6, height/9);
 
   stroke("black");
   strokeWeight(6);
@@ -111,7 +116,7 @@ function drawGameOver(){
   else{
     fill("grey");
   }
-  rect(width/2, height*2/3, width/7, height/10);
+  rect(width/2, height*2/3, width/6, height/9);
   noStroke();
   fill("black");
   textSize(width/25);
@@ -184,13 +189,13 @@ function addCheckers(){
       if (grid[i][j] === "playerKing"){
         fill("blue");
         ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8);
-        fill("yellow")
+        fill("yellow");
         ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize/3);
       }
       if (grid[i][j] === "enemyKing"){
         fill("red");
         ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize * 7/8);
-        fill("yellow")
+        fill("yellow");
         ellipse(cellSize * i + xOffset, cellSize * j +yOffset, cellSize/3);
       }
     }
@@ -374,7 +379,7 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
             }
           }
           if (i < 6){
-            if (grid[i + 1][j + 1] === "player"){
+            if (grid[i + 1][j + 1] === "player" || grid[i + 1][j + 1] === "playerKing"){
               if(grid[i + 2][j + 2] === "empty"){
                 let move = {
                   enemyI: i,
@@ -392,7 +397,7 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
             }
           }
           if (i > 1){
-            if (grid[i - 1][j + 1] === "player"){
+            if (grid[i - 1][j + 1] === "player"  || grid[i - 1][j + 1] === "playerKing"){
               if(grid[i - 2][j + 2] === "empty"){
                 let move = {
                   enemyI: i,
@@ -439,7 +444,7 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
               }
             }
             if (i < 6){
-              if (grid[i + 1][j - 1] === "player"){
+              if (grid[i + 1][j - 1] === "player"  || grid[i + 1][j - 1] === "playerKing"){
                 if(grid[i + 2][j - 2] === "empty"){
                   let move = {
                     enemyI: i,
@@ -454,7 +459,7 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
               }
             }
             if (i > 1){
-              if (grid[i - 1][j - 1] === "player"){
+              if (grid[i - 1][j - 1] === "player"  || grid[i - 1][j - 1] === "playerKing"){
                 if(grid[i - 2][j - 2] === "empty"){
                   let move = {
                     enemyI: i,
@@ -498,10 +503,10 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
       if (enemyChosenMove.side === "L"){
         grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "empty";
         if (enemyChosenMove.king){
-          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemyKing";
+          grid[enemyChosenMove.enemyI - 2][enemyChosenMove.enemyJ + 2] = "enemyKing";
         }
         if (!enemyChosenMove.king){
-          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
+          grid[enemyChosenMove.enemyI - 2][enemyChosenMove.enemyJ + 2] = "enemy";
         }
       }
     }
@@ -509,18 +514,18 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
     if (!enemyChosenMove.jump){ // non jumping moves
       if (enemyChosenMove.side === "R"){
         if (enemyChosenMove.king){
-          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemyKing";
+          grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "enemyKing";
         }
         if (!enemyChosenMove.king){
-          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
+          grid[enemyChosenMove.enemyI + 1][enemyChosenMove.enemyJ + 1] = "enemy";
         }
       }
       if (enemyChosenMove.side === "L"){
         if (enemyChosenMove.king){
-          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemyKing";
+          grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "enemyKing";
         }
         if (!enemyChosenMove.king){
-          grid[enemyChosenMove.enemyI + 2][enemyChosenMove.enemyJ + 2] = "enemy";
+          grid[enemyChosenMove.enemyI - 1][enemyChosenMove.enemyJ + 1] = "enemy";
         }
       }
     }
@@ -541,7 +546,7 @@ function makeKings(){
   for (let i = 0; i < cols; i++){
     let j = 7;
     if (grid[i][j] === "enemy"){
-      grid[i][j] === "enemyKing";
+      grid[i][j] = "enemyKing";
     }
   }
 }
@@ -552,10 +557,10 @@ function pieceCounter(){
 
   for (let i = 0; i < 8; i++){
     for (let j = 0; j< 8; j++){
-      if(grid[i][j] === "player"){
+      if(grid[i][j] === "player" || grid[i][j] === "playerKing"){
         myPieces ++;
       }
-      if(grid[i][j] === "enemy"){
+      if(grid[i][j] === "enemy" || grid[i][j] === "enemyKing"){
         enemyPieces ++;
       }
     }
@@ -571,10 +576,12 @@ function pieceCounter(){
   if (myPieces === 0){
     gameOverScreen = true;
     youLose = true;
+    playingGame = false;
   }
   if (enemyPieces === 0){
     gameOverScreen = true;
     youWin = true;
+    playingGame = false;
   }
 }
 
