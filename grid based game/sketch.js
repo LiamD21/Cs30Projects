@@ -35,6 +35,10 @@ let overRestartButton;
 let enemyTurnTimer;
 let myTurn = enemyTurn = false;
 let king = false;
+let modeSelectScreen = false;
+let easy = medium = hard = false;
+let overEasyButton = overMediumButton = overHardButton = false;
+let difficultyConstant;
 
 function setup() {
   strokeWeight(2);
@@ -54,6 +58,9 @@ function draw() {
   background(220);
   if (startScreen){
     drawStartScreen();
+  }
+  if (modeSelectScreen){
+    gameModeButtons();
   }
   if (playingGame){
     createGrid();
@@ -94,6 +101,54 @@ function drawStartScreen(){
   fill("black");
   textSize(width/25);
   text("START", width/2, height*11/16);
+}
+
+function gameModeButtons(){
+  textSize(width/8);
+  fill("blue");
+  text("Select Difficulty", width/2, height *2/5);
+
+  stroke("black");
+  strokeWeight(6);
+
+  overHardButton = collidePointRect(mouseX, mouseY,width/2 - width/14, height*5/9 - height/20, width/7, height/10);
+  overMediumButton = collidePointRect(mouseX, mouseY,width/2 - width/12, height*6/9 - height/20, width/6, height/10);
+  overEasyButton = collidePointRect(mouseX, mouseY,width/2 - width/14, height*7/9 - height/20, width/7, height/10);
+
+  stroke("black");
+  strokeWeight(6);
+
+  if (!overHardButton){
+    fill("white");
+  }
+  else{
+    fill("grey");
+  }
+  rect(width/2, height*5/9, width/7, height/10);
+
+  if (!overMediumButton){
+    fill("white");
+  }
+  else{
+    fill("grey");
+  }
+  rect(width/2, height*6/9, width/6, height/10);
+
+  if (!overEasyButton){
+    fill("white");
+  }
+  else{
+    fill("grey");
+  }
+  rect(width/2, height*7/9, width/7, height/10);
+
+  noStroke();
+  fill("black");
+  textSize(width/25);
+  text("HARD", width/2, height*15/26);
+  text("MEDIUM", width/2, height*11/16);
+  text("EASY", width/2, height*15/19);
+
 }
 
 function drawGameOver(){
@@ -490,15 +545,20 @@ function pickEnemyMove(){     // format for possible moves, i, j, L or R for lef
         }
       }
     }
-    if (enemyKillMoves.length === 0){
-      moveIndex = random(enemyMoves.length);
-      moveIndex = floor(moveIndex);
-      enemyChosenMove = enemyMoves[moveIndex];
-    }
-    if (enemyKillMoves.length > 0) {
+    let jumpOrNot = random(10);
+    let kill = false;
+
+    if (enemyKillMoves.length > 0 && jumpOrNot <= difficultyConstant) {
       moveIndex = random(enemyKillMoves.length);
       moveIndex = floor(moveIndex);
       enemyChosenMove = enemyKillMoves[moveIndex];
+      kill = true;
+    }
+
+    if (enemyKillMoves.length === 0 || !kill){
+      moveIndex = random(enemyMoves.length);
+      moveIndex = floor(moveIndex);
+      enemyChosenMove = enemyMoves[moveIndex];
     }
     console.log(enemyChosenMove);
 
@@ -636,9 +696,26 @@ function mouseClicked(){
   if (startScreen && overStartButton){
     setupGrid();
     startScreen = false;
-    playingGame = true;
+    modeSelectScreen = true;
     myTurn = true;
     enemyTurn = false;
+  }
+  if (modeSelectScreen){
+    if (overHardButton){
+      difficultyConstant = 10;
+      modeSelectScreen = false;
+      playingGame = true;
+    }
+    if (overMediumButton){
+      difficultyConstant = 8;
+      modeSelectScreen = false;
+      playingGame = true;
+    }
+    if (overEasyButton){
+      difficultyConstant = 6;
+      modeSelectScreen = false;
+      playingGame = true;
+    }
   }
   if (gameOverScreen && overRestartButton){
     gameOverScreen = false;
