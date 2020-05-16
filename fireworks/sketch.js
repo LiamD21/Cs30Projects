@@ -3,20 +3,22 @@
 // 
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// the firework forms a circle, using trig to make each piece travel at a diffenent angle around the circle
 
-let fireworks;
+let fireworks = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  fireworks = [];
 }
 
 function draw() {
-  background(220);
+  background(20);
   for (let i = 0; i < fireworks.length; i++){
-    Firework.move();
-    Firework.show();
+    fireworks[i].move();
+    fireworks[i].show();
+    if (fireworks[i].a <= 0){
+      fireworks.splice(i, 1);
+    }
   }
 }
 
@@ -36,18 +38,27 @@ class Firework {
   move() {
     this.x += this.dx;
     this.y += this.dy;
+    this.dy += .1;
   }
 
   show() {
     noStroke();
     fill(this.r, this.g, this.b, this.a);
     ellipse(this.x, this.y, this.radius);
+    this.a -= 3;
   }
 }
 
-function mouseClicked(){
-  for (let i = 0; i < 1; i++){
-    let firework = new Firework(mouseX, mouseY, 5, random(1, 3), random(1, 3), 255, 0, 0, 255);
+function mouseClicked(){   
+  let r = random(0, 255);
+  let g = random(0, 255);
+  let b = random(0, 255);
+  for (let i = 0; i < 100; i++){
+    let angle = i * 3.6;
+    let speed = random(1, 4);
+    let dx = speed * sin(angle);
+    let dy = speed * cos(angle);
+    let firework = new Firework(mouseX, mouseY, 5, dx, dy, r, g, b, 255);
     fireworks.push(firework);
   }
 }
