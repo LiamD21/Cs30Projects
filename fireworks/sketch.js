@@ -63,6 +63,10 @@ class Firework {
     ellipse(this.x, this.y, this.radius);
     this.a -= 2.8;
   }
+
+  checkCollision(bird){
+
+  }
 }
 
 class Bird {
