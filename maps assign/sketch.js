@@ -41,8 +41,37 @@ function learnWordScores() {
   //need to loop through the information from the text file, and assign appropriate scores to each word
   // you will want to use the .split function built into JS (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
 
-  let myWords = reviewData.split(' ');
-  console.log(myWords);
+  let allWords = [];
+  for (let i = 0; i < reviewData.length; i++){
+    let myWords = reviewData[0].split(' ');
+    let score = myWords[0];
+    myWords.pop()
+    for (let j = 1; j < myWords.length; j++){
+      if (wordScores.has(myWords[i])){
+        let theseScores = wordScores.get(myWords[i]);
+        let scoreArr = theseScores.scores;
+        scoreArr.push(score);
+        let sum = 0;
+        for (score in scoreArr){
+          sum += score;
+        }
+        sum = sum/scoreArr.length;
+        let wordInfo = {
+          scores: [scoreArr],
+          Avg: sum
+        };
+        wordScores.set(myWords[i], wordInfo);
+      }
+      if (!wordScores.has(myWords[i])){
+        let wordInfo = {
+          scores: [score],
+          Avg: score
+        };
+        wordScores.set(myWords[i], wordInfo);
+      }
+    }
+  }
+  console.log(wordScores.get(""));
 }
 
 function runAnalysis() {
