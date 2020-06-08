@@ -41,7 +41,8 @@ function learnWordScores() {
   //need to loop through the information from the text file, and assign appropriate scores to each word
   // you will want to use the .split function built into JS (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
 
-  
+  let myWords = reviewData.split(' ');
+  console.log(myWords);
 }
 
 function runAnalysis() {
