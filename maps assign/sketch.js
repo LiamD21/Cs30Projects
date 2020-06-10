@@ -43,42 +43,56 @@ function learnWordScores() {
 
   let allWords = [];
   for (let i = 0; i < reviewData.length; i++){
-    let myWords = reviewData[0].split(' ');
+    let myWords = reviewData[i].split(' ');
     let score = myWords[0];
-    myWords.pop()
-    for (let j = 1; j < myWords.length; j++){
+    myWords.splice(0, 1);
+    for (let j = 0; j < myWords.length; j++){
       if (wordScores.has(myWords[i])){
-        let theseScores = wordScores.get(myWords[i]);
-        let scoreArr = theseScores.scores;
-        scoreArr.push(score);
-        let sum = 0;
-        for (score in scoreArr){
-          sum += score;
+        for (let w of allWords){
+          if (w.word === myWords[i]){
+            w.scores.push(score);
+            let avg = 0;
+            for (let sc of w.scores){
+              avg += sc;
+            }
+            avg = avg/w.scores.length;
+            wordScores.set(myWords[i], avg);
+            break;
+          }
         }
-        sum = sum/scoreArr.length;
-        let wordInfo = {
-          scores: [scoreArr],
-          Avg: sum
-        };
-        wordScores.set(myWords[i], wordInfo);
+        wordScores.set(myWords[i], );
       }
-      if (!wordScores.has(myWords[i])){
+      else if (!wordScores.has(myWords[i])){
         let wordInfo = {
-          scores: [score],
-          Avg: score
+          word: myWords[i],
+          scores: [score]
         };
-        wordScores.set(myWords[i], wordInfo);
+        allWords.push(wordInfo);
+        wordScores.set(myWords[i], score);
       }
     }
+    console.log("HI");
   }
-  console.log(wordScores.get(""));
 }
 
 function runAnalysis() {
   let wordsToLookup = phraseInput.value().split(" ");
   // you need to look up each word typed in, which is given in the array above.
   // use those to calculate whether the average sentiment of all the words put together 
-
+  let addedScores = 0;
+  console.log(wordScores);
+  for(let words in wordsToLookup){
+    if (wordScores.has(words)){
+      addedScores += wordScores.get(words);
+      console.log(wordScores.get(words));
+    }
+    else if (!wordScores.has(words)){
+      addedScores += 2;
+      console.log("HI");
+    }
+  }
+  averageSentiment =  addedScores/wordsToLookup.length;
+  
 
 
   // leave the function call below in your code so that your results will be automatically displayed
